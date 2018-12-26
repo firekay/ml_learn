@@ -590,3 +590,5 @@ fabric.properties
 .idea/sonarlint
 
 # End of https://www.gitignore.io/api/pycharm
+content.tex
+_region_.tex
