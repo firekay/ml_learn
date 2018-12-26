@@ -1,0 +1,169 @@
+%**********************
+% Document type switch
+%**********************
+%\def\preprint{0}
+\def\preprint{1}
+
+%****************
+% Document class
+%****************
+%\documentclass[UTF8]{article}
+% English
+\documentclass{article}
+% Chinese
+% \documentclass{ctexart}
+
+%****************
+% Packages, etc.
+%****************
+\usepackage{ifthen}
+\ifthenelse{\preprint = 1}{
+  \usepackage{amsthm,fullpage}
+  \newtheorem{theorem}{Theorem}[section]
+  \newtheorem{lemma}[theorem]{Lemma}
+  \newtheorem{corollary}[theorem]{Corollary}
+}{
+%\usepackage{tocloft}
+}
+\usepackage[normalem]{ulem}
+
+%**********
+% Packages
+%**********
+\usepackage{amsmath,amsfonts,amssymb,hyperref,multirow}
+\usepackage{algorithm}
+%\usepackage[noend]{algpseudocode}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+\hypersetup{colorlinks}
+\newcommand{\algnote}[1]{\footnotesize \sc{Note: \it#1 } }
+
+\usepackage{amssymb}
+\usepackage{lastpage}
+% for chinese
+% \usepackage{ctex}
+% to include pdf/eps/png files
+\usepackage{graphicx}
+% useful to add 'todo' markers
+\usepackage{todonotes}
+% hyperrefs
+\usepackage{hyperref}
+% nice source code formatting
+\usepackage{minted}
+% change style of section headings
+\usepackage{sectsty}
+\allsectionsfont{\sffamily}
+% only required for orgmode ticked TODO items, can remove
+\usepackage{amssymb}
+% only required for underlining text
+\usepackage[normalem]{ulem}
+
+% \usepackage{fancyhdr}
+% \pagestyle{fancy}
+% \setlength{\headheight}{13pt}
+% \renewcommand{\headrulewidth}{0.4pt}
+% \renewcommand{\footrulewidth}{0.4pt}
+% \fancyhead[LE,RO]{Machine Learning Optimizition}
+% \fancyhead[LE,LO]{\thepage}
+% \fancyfoot[CE,CO]{\leftmark}
+% \fancyfoot[LE,RO]{\thepage\ of \pageref{LastPage}}
+% \usepackage{makeidx}
+% \usepackage[colorlinks,
+%             linkcolor=red,
+%             anchorcolor=blue,
+%             citecolor=green,
+%             CJKbookmarks
+%             ]{}
+\usepackage[center]{titlesec}
+
+% often use this in differential operators:
+\renewcommand{\d}{\ensuremath{\mathrm{d}}}
+
+%% allow more reasonable text width for most documents than LaTeX default
+%\setlength{\textheight}{21cm}
+%\setlength{\textwidth}{16cm}
+%
+%% reduce left and right margins accordingly
+%\setlength{\evensidemargin}{-0cm}
+%\setlength{\oddsidemargin}{-0cm}
+%
+%% reduce top margin
+%\setlength{\topmargin}{0cm}
+
+% Increase default line spacing a little if desired
+\renewcommand{\baselinestretch}{1.2}
+
+% tailored float handling
+%\renewcommand{\topfraction}{0.8}
+%\renewcommand{\bottomfraction}{0.6}
+%\renewcommand{\textfraction}{0.2}
+
+%*******
+% Title
+%*******
+% TODO: Add Title
+\title{\sffamily \textbf{Deep Learing Knowledge}}
+
+%*********
+% Authors
+%*********
+\author{Xu Zhenkai}
+
+%**********
+% Document
+%**********
+\begin{document}
+
+%*******
+% Title
+%*******
+\maketitle
+
+%**********
+% Abstract
+%**********
+% TODO: Add abstract
+\begin{abstract}
+\end{abstract}
+
+\ifthenelse{\preprint = 0}{
+
+  %**********
+  % Keywords
+  %**********
+  \begin{keywords}
+      TODO: Add Keywords
+  \end{keywords}
+
+  %*****
+  % AMS
+  %*****
+  \begin{AMS}
+    TODO: AMS - 65K05, 68Q25, 68T05, 90C06, 90C30, 90C90
+  \end{AMS}
+
+}{}
+
+%*******************
+% Table of Contents
+%*******************
+\ifthenelse{\preprint = 1}{
+  %\newpage
+  \tableofcontents
+  \newpage
+}{}
+% include body of the paper, auto generated from orgmode content.org file
+\input{content.tex}
+
+
+\bibliographystyle{abbrv}
+\bibliography{DeepLearning.bib}
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-command-extra-options: "-shell-escape"
+%%% TeX-master: t
+%%% TeX-engine: xetex
+%%% End:
+
