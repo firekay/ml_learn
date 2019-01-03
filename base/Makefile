@@ -8,6 +8,7 @@ force: content.tex
 	xelatex -shell-escape base.tex
 	bibtex base
 	xelatex -shell-escape base.tex
+	xelatex -shell-escape base.tex
 
 
 content.tex: content.org extract_body.py code/*

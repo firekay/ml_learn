@@ -1,0 +1,10 @@
+* Boosting
+** AdaBoost
+
+
+
+
+
+* Footnotes
+[fn:ada1] [[https://towardsdatascience.com/boosting-algorithm-adaboost-b6737a9ee60c][Boosting algorithm: AdaBoost]]
+[fn:ada2] [[https://www.cnblogs.com/pinard/p/6133937.html][集成学习之 Adaboost 算法原理小结]]

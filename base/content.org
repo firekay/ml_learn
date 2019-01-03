@@ -1,0 +1,829 @@
+# #+OPTIONS: ^:nil
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
+#+author: Xu Zhenkai
+#+title: base ml
+* What Is ML
+   1. The field of machine learning is concerned with the question of how to construct *computer programs* that *automatically improve* with experience. \\
+    A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.
+   2. Vast amounts of data are being generated in many fields, and the statisticians’s job is to make sense of it all: to extract important patterns and trends, and to understand “what the data says”. We call this learning from data. \\
+      The Elements of Statistical Learning: Data Mining, Inference, and Prediction
+   3. One of the most interesting features of machine learning is that it lies on the boundary of several different academic disciplines, principally computer science, statistics, mathematics, and engineering. … machine learning is usually studied as part of artificial intelligence, which puts it firmly into computer science …understanding why these algorithms work requires a certain amount of statistical and mathematical sophistication that is often missing from computer science undergraduates.
+   4. Machine Learning is Hacking + Math & Statistics.
+
+* Class Imbalance
+  类别不平衡 class-imbalance
+
+  主要介绍了分类中类别不均衡时学习中常用的算法及评价指标，算法主要从数据和模型两个层面介绍，数据层面的算法主要关于过采样和欠采样以及改进的算法，模型方面主要讲解了基于代价的敏感学习。评价指标主要讲解了 F1 度量、G-Mean 和 ROC 曲线 AUC 面积。
+
+  如果不同类别的训练样例数目稍有差别，通常影响不大，但若差别很大，则会对学习过程造成困扰。例如有 998 个反例，但是正例只有 2 个，那么学习方法只需要返回一个永远将新样本预测为反例的学习器，就能达到 99.8%的精度；然而这样的学习器往往没有价值，因为它不能预测出任何正例。
+
+  类别不平衡（class-imbalance）就是指分类任务中不同类别的训练样例数目差别很大的情况。在现实的分类学习任务中，我们经常会遇到类别不平衡，例如在通过拆分法解决多分类问题时，即使原始问题中不同类别的训练样例数目相当，在使用 OvR（一对其余，One vs. Rest，简称 OvR）、MvM（多对多，Many vs. Many，简称 MvM）策略后产生的二分类任务扔可能出现类别不平衡现象.
+
+** 解决类别不平衡问题
+*** 欠采样方法(undersampling)
+    直接对训练集中多数类样本进行“欠采样”（undersampling），即去除一些多数类中的样本使得正例、反例数目接近，然后再进行学习[fn:5]。
+**** 随机欠采样方法
+
+     随机欠采样顾名思义即从多数类 $S_{maj}$ 中随机选择一些样样本组成样本集 *E* 。然后将样本集 *E* 从 $S_{maj}$ 中移除。新的数据集 $S_{new-maj}=S_{maj}-E$ 。
+
+     - 缺点
+
+       随机欠采样方法通过改变多数类样本比例以达到修改样本分布的目的，从而使样本分布较为均衡，但是这也存在一些问题。对于随机欠采样，由于采样的样本集合要少于原来的样本集合，因此会造成一些信息缺失，即将多数类样本删除有可能会导致分类器丢失有关多数类的重要信息。
+
+     为了克服随机欠采样方法导致的信息缺失问题，又要保证算法表现出较好的不均衡数据分类性能，出现了欠采样法代表性的算法 *EasyEnsemble* 和 *BalanceCascade* 算法。
+**** 欠采样代表性算法-EasyEnsemble \cite{4717268}
+
+     算法步骤：
+      1. 从多数类中有放回的随机采样 n 次，每次选取与少数类数目相近的样本个数，那么可以得到 n 个样本集合记作。
+      2. 然后，将每一个多数类样本的子集与少数类样本合并并训练出一个模型，可以得到 n 个模型。
+      3. 最终将这些模型组合形成一个集成学习系统，最终的模型结果是这 n 个模型的平均值。
+**** 欠采样代表性算法-BalanceCascade \cite{4717268}
+
+     BalanceCascade 算法基于 Adaboost，将 Adaboost 作为基分类器，其核心思路是：
+      1. 在每一轮训练时都使用多数类与少数类数量相等的训练集，训练出一个 Adaboost 基分类器。
+      2. 然后使用该分类器对全体多数类进行预测，通过控制分类阈值来控制假正例率（False Positive Rate）,将所有判断正确的类删除。
+      3. 最后，进入下一轮迭代中，继续降低多数类数量。
+     #+CAPTION: BalanceCascade Algorithms
+     file:figures/BalanceCascade.png
+*** 过采样方法
+    对训练集里的少数类进行“过采样”（oversampling），即增加一些少数类样本使得正、反例数目接近，然后再进行学习。
+**** 随机过采样方法
+
+     随机过采样是在少数类 $S_{min}$ 中随机选择一些样本，然后通过复制所选择的样本生成样本集 *E* ，将它们添加到 $S_{min}$ 中来扩大原始数据集从而得到新的少数类集合 $S_{new-min}$ 。新的数据集 $S_{new-min} = S_{min} + E$ 。
+     - 缺点
+
+       对于随机过采样，由于需要对少数类样本进行复制来扩大数据集，造成模型训练复杂度加大。另一方面也容易造成模型的过拟合问题，因为随机过采样是简单的对初始样本进行复制采样，这就使得学习器学得的规则过于具体化，不利于学习器的泛化性能，造成过拟合问题。
+
+       为了解决随机过采样中造成模型过拟合问题，又能保证实现数据集均衡的目的，出现了过采样法代表性的算法 *SMOTE* 和 *Borderline-SMOTE* 算法。
+
+**** 过采样代表性算法-SMOTE \cite{Chawla_2002}
+
+     SMOTE 全称是 Synthetic Minority Oversampling 即合成少数类过采样技术.
+
+     SOMT 算法的基本思想是对每个少数类样本，从它的最近邻中随机选择一个样本（是少数类中的一个样本），然后在和之间的连线上随机选择一点作为新合成的少数类样本。
+
+     SMOTE 算法合成新少数类样本的算法描述如下：
+      1. 对于少数类中的每一个样本，以欧氏距离为标准计算它到少数类样本集中所有样本的距离，得到其 k 近邻。
+      2. 根据样本不平衡比例设置一个采样比例以确定采样倍率 N，对于每一个少数类样本，从其 k 近邻中随机选择若干个样本，假设选择的是。
+      3. 对于每一个随机选出来的近邻，分别与按照如下公式构建新的样本。 \( x_{new} = x_{i} + rand(0, 1) * (\hat{x_{i}} - x_{i}) \)
+
+     SMOTE 算法摒弃了随机过采样复制样本的做法，可以防止随机过采样中容易过拟合的问题，实践证明此方法可以提高分类器的性能。
+
+     但是 SMOTE 算法也存以下两个缺点:
+      - 由于对每个少数类样本都生成新样本，因此容易发生生成样本重叠的问题。
+      - 在 SMOTE 算法中，出现了过度泛化的问题，主要归结于产生合成样本的方法。特别是，SMOTE 算法对于每个原少数类样本产生相同数量的合成数据样本，而没有考虑其邻近样本的分布特点，这就使得类间发生重复的可能性增大。
+     为了克服以上两点的限制，多种不同的自适应抽样方法相继被提出，其中具有代表性的算法包括 Borderline-SMOTE 算法。
+
+**** Borderline-SMOTE 算法  \cite{Han_2005}
+
+     对于 Borderline-SMOTE 算法最感兴趣的就是用于识别少数类种子样本的方法。在 Borderline-SMOTE 算法中，识别少数类种子样本的过程如下：
+
+      1. 首先，对于每个 $x_{i} \subset S_{min}$ ,确定一系列最近邻样本集，成该数据集为 $S_{i-KNN}$ ，且 $S_{i-KNN} \subset S$ 。
+      2. 然后，对每个样本 $x_{i}$ ，判断出最近邻样本集中属于多数类样本的个数，即 $|S_{i-KNN} \cap S_{maj}|$ ：
+      3. 最后，选择满足下面不等式的。
+         \( k/2 < |S_{i-KNN} \cap S_{maj}| < k \)
+
+     上面式子表明，只有最近邻样本集中多数类多于少数类的那些 $x_{i}$ 才会被选中形成“危险集”(DANGER)。因此，DANGER 集中的样本代表少数类样本的边界（最容易被错分的样本）。然后对 DANGER 集中使用 SMOTE 算法在边界附近产生人工合成少数类样本。
+
+     #+CAPTION: 基于在边界上样本的数据建立
+     #+NAME: fig.smote_data
+     [[file:figures/borderline_smote_data.png]]
+
+     #+CAPTION: Borderline-SMOTE 算法流程图
+     #+NAME: fig.smote_flow
+     [[file:figures/borderline_smote_flow.png]]
+*** 代价敏感学习(cost-sensitive learning)
+
+    采样算法从数据层面解决不平衡数据的学习问题；在算法层面上解决不平衡数据学习的方法主要是基于代价敏感学习算法（Cost-Sensitive Learning).
+
+    代价敏感学习方法的核心要素是代价矩阵.
+
+      #+CAPTION: 代价矩阵
+      | 真是类别 | 预测类别  | 预测类别  |
+      |          | 第 0 类   | 第 1 类   |
+      |----------+-----------+-----------|
+      |        0 | 0         | Cost_{01} |
+      |        1 | Cost_{10} | 0         |
+**** 代价敏感学习方法
+     代价敏感学习方法主要有以下三种实现方式:
+       1. 从学习模型出发
+          *对某一具体学习方法的改造* ，使之能适应不平衡数据下的学习，研究者们针对不同的学习模型如感知机、支持向量机、决策树、神经网络等分别提出了其代价敏感的版本。以代价敏感的决策树为例，可以从三个方面对其进行改造以适应不平衡数据的学习，这三个方面分别是决策阈值的选择方面、分裂标准的选择方面、剪枝方面，这三个方面都可以将代价矩阵引入。
+       2. 从贝叶斯风险理论出发
+          *把代价敏感学习看成是分类结果的一种后处理* ，按照传统方法学习到一个模型，以实现损失最小为目标对结果进行调整，优化公式如下所示。此方法的优点在于它可以不依赖所用的具体分类器，但是缺点也很明显，它要求分类器输出值为概率。
+       3. 从预处理的角度出发
+          *将代价用于权重调整* ，使得分类器满足代价敏感的特性，下面讲解一种基于 Adaboost 的权重更新策略 AdaCost 算法。
+
+          AdaCost 算法修改了 Adaboost 算法的权重更新策略，其基本思想是 *对代价高的误分类样本大大地提高其权重，而对于代价高的正确分类样本适当地降低其权重，使其权重降低相对较小。总体思想是代价高样本权重增加得大降低的慢* 。
+          其样本权重按照如下公式进行更新。其中 $\beta_{\_}$ 和 $\beta_{+}$ 分别表示样本被正确和错误分类情况下的 $\beta$ 的取值。
+          #+CAPTION: Adacost weight update
+          [[./figures/adacost.png]]
+
+          #+CAPTION: Adaboost algorithm
+          [[./figures/adaboost.png]]
+** 不平衡学习的评价方法
+   - F1
+   - G-Mean
+   - ROC曲线和AUC面积
+** 如何选择算法
+    1. 在正负样本都非常少的情况下，应该采用数据合成的方式，例如：SMOTE 算法和 Borderline-SMOTE 算法。
+    2. 在正负样本都足够多且比例不是特别悬殊的情况下，应该考虑采样的方法或者是加权的方法。
+* Types Of Machine Learning Algorithms
+** Learning Style
+*** Supervised Learning
+    从给定的训练数据集中学习出一个函数，当新的数据到来时，可以根据这个函数预测结果。监督学习的训练集需要包括输入和输出，也可以说是特征和目标。训练集中的目标是由人标注的。常见的监督式学习算法包括回归分析和统计分类。 [fn:1]  [fn:4]
+    #+CAPTION: Supervised Learning WorkFlow
+    [[./figures/SupervisedLearning1.png]]
+
+**** Application Scenarios
+
+     Regression, Classification
+**** Procedure
+
+     1. 决定范例训练资料的形态
+     2. 搜索训练资料
+     3. 决定学习函数的输入特征的表示法
+     4. 决定要学习的函数, 以及函数的所使用的资料结构
+     5. 完成设计
+     6. 评估实际学习出的函数
+**** Common Algorithms
+
+     逻辑回归（Logistic Regression）和反向传递神经网络（Back Propagation Neural Network）
+     - ArtifiCial Neural Network
+     - Naive Bayes
+     - Support Vector Machines (SVM)
+     - Linear Regression
+     - Decision Trees
+     - Nearest Neighbor
+     - K-Nearest Neighbors
+*** Unsupervised Learning
+    与监督学习相比，训练集没有人为标注的结果。学习模型是为了推断出数据的一些内在结构。
+
+    These algorithms try to use techniques on the input data to mine for rules, detect patterns, and summarize and group the data points which help in deriving meaningful insights and describe the data better to the users.
+**** Application Scenarios
+
+     Clustering
+**** Common Algorithms
+
+     - K-Means Clustering
+     - Bisecting K-means
+     - Hierarchical Clustering
+     - Anomaly Detection
+     - Association Rules
+       + Apriori
+       + FP Growth
+     - Approaches For Learning Latent Variable Models
+       + Expectation–maximization algorithm (EM)
+     - BLind Signal Separation Techniques
+       + Principal Component Analysis
+       + Independent Component Analysis
+       + Non-Negative Matrix Factorization
+       + Singular Value Decomposition
+*** Semi-Supervised Learning
+   Input data is a mixture of labelled and unlabelled examples. There is a desired prediction problem but the model must learn the structures to organize the data as well as make predictions.
+
+   Application Scenarios：Regression, Classification
+
+   算法包括一些对常用监督式学习算法的延伸，这些算法首先试图对未标识数据进行建模，在此基础上再对标识的数据进行预测。如图论推理算法（Graph Inference）或者拉普拉斯支持向量机（Laplacian SVM.）等。
+*** Reinforcement Learning
+    Reinforcement Learning allows machines and software agents to automatically determine the ideal behavior within a specific context, in order to maximize its performance. Simple reward feedback is required for the agent to learn its behavior; this is known as the reinforcement signal. [fn:2]
+     #+CAPTION: Reinforcement Learning state graph
+     #+NAME: sec2.rl
+     [[./figures/ReinforcementLearning1.png]]
+
+     In the problem, an agent is supposed decide the best action to select based on his current state. When this step is repeated, the problem is known as a Markov Decision Process.
+
+     In order to produce intelligent programs (also called agents), reinforcement learning goes through the following steps:
+      - Input state is observed by the agent.
+      - Decision making function is used to make the agent perform an action.
+      - After the action is performed, the agent receives reward or reinforcement from the environment.
+      - The state-action pair information about the reward is stored.
+**** Common Algorithms
+     - Q-Learning
+     - TD(Temporal Difference)
+     - Deep Adversarial Networks
+** Algorithms Grouped By Similarity
+*** Regression
+
+    Regression Algorithms is concerned with modeling the relationship between variables. That we use to refine using a measure of error in the predictions made by the model[fn:3].
+**** Common Algorithms
+     - Ordinary Least Squares Regression (OLSR)
+     - Linear Regression
+     - Logistic Regression
+     - Stepwise Regression
+     - Multivariate Adaptive Regression Splines (MARS)
+     - Locally Estimated Scatterplot Smoothing (LOESS)
+*** Instance-based
+    This model is a decision problem with instances training data. That is deemed important or required to the model. Such methods build up a database of example data. And it needs to compare new data to the database. For comparison, we use a similarity measure to find the best match and make a prediction.
+**** Common Algorithms
+     - k-Nearest Neighbor (kNN)
+     - Learning Vector Quantization (LVQ)
+     - Self-Organizing Map (SOM)
+     - Locally Weighted Learning (LWL)
+
+*** Regularization
+    A generally simple modifications made to other methods. That is penalizing models which relate to their complexity. Also, favoring simpler models that are also better at generalizing.
+
+**** Common Algorithms
+     - Ridge Regression
+     - Least Absolute Shrinkage and Selection Operator (LASSO)
+     - Elastic Net
+     - Least-Angle Regression (LARS)
+*** Decision Tree
+    Decision tree methods construct a model of decisions. That is made based on the actual values of attributes in the data. Decision trees are trained on data for classification and regression problems. Decision trees are often fast and accurate and a big favorite in Machine Learning.
+**** Common Algorithms
+     - Classification and Regression Tree (CART)
+     - Iterative Dichotomiser 3 (ID3)
+     - C4.5 and C5.0 (different versions of a powerful approach)
+     - Chi-squared Automatic Interaction Detection (CHAID)
+     - Decision Stump
+     - M5
+     - Conditional Decision Trees
+*** Bayesian
+    These methods are those that apply Bayes’ Theorem for problems.
+**** Common Algorithms
+     - Naive Bayes
+     - Gaussian Naive Bayes
+     - Multinomial Naive Bayes
+     - Averaged One-Dependence Estimators (AODE)
+     - Bayesian Belief Network (BBN)
+     - Bayesian Network (BN)
+*** Clustering
+    Clustering, like regression, describes the class of problem and the class of methods. The Clustering methods are organized by the modeling approaches such as centroid-based and hierarchal. All methods are concerned with using the inherent structures in the data. That is a need to best organize the data into groups of maximum commonality.
+**** Common Algorithms
+     - k-Means
+     - k-Medians
+     - Expectation Maximisation (EM)
+     - Hierarchical Clustering
+*** Association Rule
+    Association rule learning methods extract rules. That best explain observed relationships between variables in data. These rules can discover important and useful associations in large multidimensional datasets. That can be exploited by an organization.
+**** Common Algorithms
+     - Apriori algorithm
+     - Eclat algorithm
+*** Artificial Neural Network
+    These are models that are inspired by the structure of biological neural networks. They are a class of pattern matching. That we use for regression and classification problems. Although, there is an enormous subfield. As it combines hundreds of algorithms and variations.
+**** Common Algorithms
+     - Perceptron
+     - Back-Propagation
+     - Hopfield Network
+     - Radial Basis Function Network (RBFN)
+*** Deep Learning
+    Deep Learning methods are a modern update to Artificial Neural Networks. That is exploiting abundant cheap computation. They are concerned with building much larger and more complex neural networks.
+**** Common Algorithms
+     - Deep Boltzmann Machine (DBM)
+     - Deep Belief Networks (DBN)
+     - Convolutional Neural Network (CNN)
+     - Recurrent neural network(RNN)
+     - Stacked Auto-Encoders
+*** Dimensionality Reduction
+    Generally, it can be useful to visualize dimensional data. Also, we can use it in a supervised learning method. Many of these methods we adopt for use in classification and regression.
+**** Common Algorithms
+     - Principal Component Analysis (PCA)
+     - Principal Component Regression (PCR)
+     - Partial Least Squares Regression (PLSR)
+     - Sammon Mapping
+     - Multidimensional Scaling (MDS)
+     - Projection Pursuit
+     - Linear Discriminant Analysis (LDA)
+     - Mixture Discriminant Analysis (MDA)
+     - Quadratic Discriminant Analysis (QDA)
+     - Flexible Discriminant Analysis (FDA)
+*** Ensemble
+    Basically, these methods are models composed of weaker models. Much effort is put into what types of weak learners to combine and the ways in which to combine them. Hence, this is a very powerful class of techniques and as such is very popular.
+**** Common AlgorithmsBoosting
+     - Bootstrapped Aggregation (Bagging)
+     - AdaBoost
+     - Stacked Generalization (blending)
+     - Gradient Boosting Machines (GBM)
+     - Gradient Boosted Regression Trees (GBRT)
+     - Random Forest
+     - XGBoost
+* Math Knowledges
+** Curse Of Dimensionality
+   当空间维度增加时, 分析和组织高维空间, 会因体积的指数增加而遇到各种问题. 当空间体积增加太快, 会使可用数据变得非常稀疏. 当数据变得非常稀疏后, 从很多角度分析都不相似, 因为常使数据组织策略变得低效
+** Measuring Similarity and Distance
+   In statistics and related fields, a similarity measure or similarity function is a real-valued function that quantifies the similarity between two objects[fn:11][fn:19].
+
+   Similarity measures are in some sense the inverse of distance metrics: they take on large values for similar objects and either zero or a negative value for very dissimilar objects.
+
+   In the context of cluster analysis, Frey and Dueck suggest defining a similarity measure
+  \begin{equation}
+  \label{eq:4}
+  s(x,y)=-\|x-y\|_{2}^{2}
+  \tag{6}
+  \end{equation}
+  where $\|x-y\|_{2}^{2}$ the squared Euclidean distance.
+
+  There are four common setups for similarity and metric distance learning.
+    - Regression similarity learning
+    - Classification similarity learning
+    - Ranking similarity learning
+    - Locality sensitive hashing (LSH)
+*** Distance Between Numeric Data Points
+    When the dimension of a data point is numeric, the general form is called the Minkowski distance.
+
+**** Minkowski Distances
+     The Minkowski distance of order p between two points
+     \[X=(x_{1},x_{2},\ldots ,x_{n}){\text{ and }}Y=(y_{1},y_{2},\ldots ,y_{n})\in {\mathbb  {R}}^{n}\]
+     is defined as
+      \begin{equation}
+      \label{eq:12}
+         D\left(X,Y\right)=\left(\sum _{i=1}^{n}|x_{i}-y_{i}|^{p}\right)^{1/p}
+      \end{equation}
+
+      #+CAPTION: unit circles with various values of p
+      [[./figures/UnitCirclesInMinkowskiDistance.png]]
+
+      For $p\geq 1$, the Minkowski distance is a metric as a result of the Minkowski inequality. When $p<1$ , the distance between (0,0) and (1,1) is $2^{1/p}>2$ , but the point (0,1) is at a distance 1 from both of these points. Since this violates the triangle inequality, for $p<1$ it is not a metric.
+
+      If the value along the x-dimension is much bigger than the value along the y-dimension?  We need to bring all of them down to scale first.  A common way is to perform a z-transform where each data point first subtracts the mean value, then divides the standard deviation.
+      (x_1, y_1) becomes ( (x_1 – μ_x)/σ_x , (y_1 – μ_y)/σ_y )
+
+      This measure, although taking into consideration the distribution of each dimension, assumes the dimensions are independent of each other. But what if the x-dimension has some correlation with the y-dimension? To consider correlations between different dimensions, we use this *Mahalanobis distance*.
+
+      简单说来，闵氏距离的缺点主要有两个：(1)将各个分量的量纲(scale)，也就是“单位”当作相同的看待了。(2)没有考虑各个分量的分布（期望，方差等)可能是不同的。
+**** Euclidean Distance
+     When Minkowski distances p = 2, this is equivalent to Euclidean distance[fn:14]
+\begin{equation}
+\label{eq:14}
+{\begin{aligned}d(\mathbf {p} ,\mathbf {q} )=d(\mathbf {q} ,\mathbf {p} )&={\sqrt {(q_{1}-p_{1})^{2}+(q_{2}-p_{2})^{2}+\cdots +(q_{n}-p_{n})^{2}}}\\[8pt]&={\sqrt {\sum _{i=1}^{n}(q_{i}-p_{i})^{2}}}.\end{aligned}}
+\end{equation}
+**** Manhattan Distance
+     When Minkowski distances p = 1, this is equivalent to Euclidean distance[fn:15]
+    \begin{equation}
+    \label{eq:15}
+       d_{1}(\mathbf {p} ,\mathbf {q} )=\|\mathbf {p} -\mathbf {q} \|_{1}=\sum _{i=1}^{n}|p_{i}-q_{i}|,
+    \end{equation}
+**** Mahalanobis Distance
+     The Mahalanobis distance is a measure of the distance between a point P and a distribution D.It is a multi-dimensional generalization of the idea of measuring how many standard deviations away P is from the mean of D.[fn:16][fn:17][fn:18]
+
+     The Mahalanobis distance of an observation ${\vec {x}}=(x_{1},x_{2},x_{3},\dots ,x_{N})^{T}$ from a set of observations with mean ${\vec {\mu }}=(\mu _{1},\mu _{2},\mu _{3},\dots ,\mu _{N})^{T}$ and covariance matrix S is defined as:
+
+\begin{equation}
+\label{eq:16}
+D_{M}({\vec {x}})={\sqrt {({\vec {x}}-{\vec {\mu }})^{T}S^{-1}({\vec {x}}-{\vec {\mu }})}}.
+\end{equation}
+
+
+    马氏距离有很多优点，马氏距离不受量纲的影响，两点之间的马氏距离与原始数据的测量单位无关；由标准化数据和中心化数据(即原始数据与均值之差）计算出的二点之间的马氏距离相同。马氏距离还可以排除变量之间的相关性的干扰。
+
+   它的缺点是夸大了变化微小的变量的作用。
+**** Cosine Distance
+     If we care about the direction of the data rather than the magnitude, then using the cosine distance is a common approach.
+
+     Cosine similarity is a measure of similarity between two non-zero vectors of an inner product space that measures the cosine of the angle between them.[fn:20]
+
+\begin{equation}
+\label{eq:17}
+     \mathbf {A} \cdot \mathbf {B} =\left\|\mathbf {A} \right\|\left\|\mathbf {B} \right\|\cos \theta
+\end{equation}
+
+\begin{equation}
+\label{eq:18}
+{\text{similarity}}=\cos(\theta )={\mathbf {A} \cdot \mathbf {B}  \over \|\mathbf {A} \|\|\mathbf {B} \|}={\frac {\sum \limits _{i=1}^{n}{A_{i}B_{i}}}{{\sqrt {\sum \limits _{i=1}^{n}{A_{i}^{2}}}}{\sqrt {\sum \limits _{i=1}^{n}{B_{i}^{2}}}}}}
+\end{equation}
+
+    夹角余弦取值范围为[-1,1]。夹角余弦越大表示两个向量的夹角越小，夹角余弦越小表示两向量的夹角越大。当两个向量的方向重合时夹角余弦取最大值 1，当两个向量的方向完全相反夹角余弦取最小值-1。
+*** Distance Between Categorical Data Points
+**** Hamming Distance
+     In information theory, the Hamming distance between two strings of equal length is the number of positions at which the corresponding symbols are different.[fn:21]  In other words, it measures the minimum number of substitutions required to change one string into the other, or the minimum number of errors that could have transformed one string into the other.
+
+     The minimum Hamming distance is used to define some essential notions in coding theory, such as *error detecting and error correcting codes*.
+
+     #+BEGIN_SRC python
+       def hamming_distance(s1, s2):
+           """Return the Hamming distance between equal-length sequences"""
+           if len(s1) != len(s2):
+               raise ValueError("Undefined for sequences of unequal length")
+           return sum(el1 != el2 for el1, el2 in zip(s1, s2))
+     #+END_SRC
+
+   应用：信息编码（为了增强容错性，应使得编码间的最小汉明距离尽可能大）。
+**** Jaccard Similarity
+     *However, in some cases, equality of certain values don't mean anything*. For example, let's say the data point represents a user with attributes representing each movie. The data point contains a high dimensional binary value indicating that the user has or has not seen the movie (1 represent yes and 0 represent no). Given that most users only see a small portion of all movies, if both users haven't seen a particular movie (a value of 0 for both), it doesn't indicate a similarity between the users. On the other hand, if both users saw the same movie (a value of 1 for each), it is implied that the users have many similarities. In this case, equality of 1 should carry a much higher weight than equality of 0. This leads to the *Jaccard similarity*
+
+     The Jaccard index, also known as Intersection over Union and the Jaccard similarity coefficient, is a statistic used for *comparing the similarity and diversity of sample sets*.[fn:22]
+
+    \begin{equation}
+    \label{eq:19}
+      J(A,B) = {{|A \cap B|}\over{|A \cup B|}} = {{|A \cap B|}\over{|A| + |B| - |A \cap B|}}
+    \end{equation}
+
+    (If A and B are both empty, we define J(A,B) = 1.)  \[ 0\le J(A,B)\le 1 \]
+
+    Whether or not values are matching, though, /if the category is structured as a Tree hierarchy, then the distance between the two categories can be quantified by the path length of their common parent/. For example, "/product/spot/ballgame/basketball" is closer to "/product/spot/ballgame/soccer/shoes" than "/product/luxury/handbags" because the common parent has a longer path.
+*** Distance between mixed categorical and numeric data points
+    When the data point contains a mixture of numeric and categorical attributes, we can calculate the distance of each group and then treat each measure of distance as a separate dimension (numeric value).
+
+    distance_{final} = α.distance_{numeric} + (1- α).distance_{categorical}
+*** Distance Between Sequence (String, Timeseries)
+    In case each attribute represents an element of a sequence, we need a different way to measure the distance. For example, let's say each data point is a string (which contains a sequence of characters) — then edit distance[fn:23] is a common measuring tool.
+
+    Basically, edit distance reveals how many "modifications" (which can be insert, modify, delete) are needed to change stringA into stringB. This is usually calculated by using thedynamic programming technique.
+****  Edit Distance
+     In computational linguistics and computer science, edit distance is a way of quantifying how dissimilar two strings (e.g., words) are to one another by counting the minimum number of operations required to transform one string into the other.
+     Using Levenshtein's original operations[fn:24], the edit distance between $a=a_{1}\ldots a_{n} a = a_1\ldots a_n$ and $b=b_{1}\ldots b_{m} b = b_1\ldots b_m$ is given by $d_{mn}$, defined by the recurrence
+\begin{align}
+\label{eq:21}
+d_{{i0}}&=\sum _{{k=1}}^{{i}}w_{{\mathrm  {del}}}(b_{{k}}),&&\quad {\text{for}}\;1\leq i\leq m\\d_{{0j}}&=\sum _{{k=1}}^{{j}}w_{{\mathrm  {ins}}}(a_{{k}}),&&\quad {\text{for}}\;1\leq j\leq n\\d_{{ij}}&={\begin{cases}d_{{i-1,j-1}}&{\text{for}}\;a_{{j}}=b_{{i}}\\\min {\begin{cases}d_{{i-1,j}}+w_{{\mathrm  {del}}}(b_{{i}})\\d_{{i,j-1}}+w_{{\mathrm  {ins}}}(a_{{j}})\\d_{{i-1,j-1}}+w_{{\mathrm  {sub}}}(a_{{j}},b_{{i}})\end{cases}}&{\text{for}}\;a_{{j}}\neq b_{{i}}\end{cases}}&&\quad {\text{for}}\;1\leq i\leq m,1\leq j\leq n
+\end{align}
+    This algorithm has a time complexity of Θ(mn). When the full dynamic programming table is constructed, its space complexity is also Θ(mn); this can be improved to Θ(min(m,n)) by observing that at any instant, the algorithm only requires two rows (or two columns) in memory. However, this optimization makes it impossible to read off the minimal series of edit operations.[3] A linear-space solution to this problem is offered by *Hirschberg's algorithm*
+*** TODO Distance Between Nodes In A Network
+*** TODO Distance Between Population Distribution
+
+* Loss Functions
+  A loss function or cost function is a function that maps an event or values of one or more variables onto a real number intuitively representing some "cost" associated with the event. An optimization problem seeks to minimize a loss function. An objective function is either a loss function or its negative (in specific domains, variously called a reward function, a profit function, a utility function, a fitness function, etc.), in which case it is to be maximized. \cite{wiki:Loss_function} \cite{github:loss_function}
+
+  [[http://www.cs.cornell.edu/courses/cs4780/2015fa/web/lecturenotes/lecturenote10.html][Empirical Risk Minimization]]
+** Regression Loss
+*** Mean Squared Error(MSE) / L2 Loss
+ \begin{equation}
+ \label{eq:22}
+ \operatorname {MSE} ={\frac {1}{n}}\sum _{i=1}^{n}(Y_{i}-{\hat {Y_{i}}})^{2}.
+ \end{equation}
+
+   The MSE can be written as the sum of the variance of the estimator and the squared bias of the estimator
+\begin{equation}
+\label{eq:23}
+\operatorname {MSE} ({\hat {\theta }})=\operatorname {Var} _{\hat {\theta }}({\hat {\theta }})+\operatorname {Bias} ({\hat {\theta }},\theta )^{2}.
+\end{equation}
+*** Mean Absolute Error(MAE) /L1 Loss
+
+\begin{equation}
+\label{eq:24}
+\mathrm {MAE} ={\frac {\sum _{i=1}^{n}\left|y_{i}-x_{i}\right|}{n}}={\frac {\sum _{i=1}^{n}\left|e_{i}\right|}{n}}.
+\end{equation}
+**** MSE VS MAE  \cite{reg_loss_func}
+     *In short, using the squared error is easier to solve, but using the absolute error is more robust to outliers*.
+
+     Since MSE squares the error (y — y_predicted = e), the value of error (e) increases a lot if e > 1. This will make the model with MSE loss give more weight to outliers than a model with MAE loss.
+
+     MAE loss is useful if the training data is corrupted with outliers.
+
+     One big problem in using MAE loss (for neural nets especially) is that its gradient is the same throughout, which means the gradient will be large even for small loss values.To fix this, we can use dynamic learning rate which decreases as we move closer to the minima. MSE behaves nicely in this case and will converge even with a fixed learning rate.
+
+     *Deciding which loss function to use*:
+     If the outliers represent anomaly that are important for business and should be detected, then we should use MSE. On the other hand, if we believe that the outliers just represent corrupted data, then we should choose MAE as loss.
+
+     L1 loss is more robust to outliers, but its derivatives are not continuous, making it inefficient to find the solution. L2 loss is sensitive to outliers, but gives a more stable and closed form solution.
+
+     [[http://rishy.github.io/ml/2015/07/28/l1-vs-l2-loss/][L1 vs. L2 Loss function]]
+
+     *Problems with both*: There can be cases where neither loss function gives desirable predictions. For example, if 90% of observations in our data have true target value of 150 and the remaining 10% have target value between 0–30. Then a model with MAE as loss might predict 150 for all observations, ignoring 10% of outlier cases, as it will try to go towards median value. In the same case, a model using MSE would give many predictions in the range of 0 to 30 as it will get skewed towards outliers. Both results are undesirable in many business cases.
+
+     What to do in such a case? An easy fix would be to transform the target variables. Another way is to try a different loss function. This is the motivation behind our 3rd loss function, *Huber loss*.
+*** Huber Loss
+    In statistics, the Huber loss is a loss function used in robust regression, that is less sensitive to outliers in data than the squared error loss.
+
+    \begin{equation}
+    \label{eq:25}
+        L_{\delta }(y,f(x))={\begin{cases}{\frac  {1}{2}}(y-f(x))^{2}&{\textrm  {for}}|y-f(x)|\leq \delta ,\\\delta \,|y-f(x)|-{\frac  {1}{2}}\delta ^{2}&{\textrm  {otherwise.}}\end{cases}}
+    \end{equation}
+
+    It’s basically absolute error, which becomes quadratic when error is small. How small that error has to be to make it quadratic depends on a hyperparameter, 𝛿 (delta), which can be tuned. *Huber loss approaches MAE when 𝛿 ~ 0 and MSE when 𝛿 ~ ∞ (large numbers.)*
+
+    It’s more robust to outliers than MSE. Therefore, it combines good properties from both MSE and MAE. However, the problem with Huber loss is that we might need to train hyperparameter delta which is an iterative process.
+*** Log cosh Loss
+    Advantage: log(cosh(x)) is approximately equal to (x ** 2) / 2 for small x and to abs(x) - log(2) for large x. This means that 'logcosh' works mostly like the mean squared error, but will not be so strongly affected by the occasional wildly incorrect prediction. It has all the advantages of Huber loss, and *it’s twice differentiable everywhere*, unlike Huber loss.
+
+    But Log-cosh loss isn’t perfect. It still suffers from the problem of gradient and hessian for very large off-target predictions being constant, therefore resulting in the absence of splits for XGBoost.
+*** TODO Quantile Loss
+    Quantile loss functions turns out to be useful when we are interested in predicting an interval instead of only point predictions.
+** Classification Loss
+*** Log Loss (Cross Entropy Loss)
+    In information theory, the cross entropy between two probability distributions $p$ and $q$ over the same underlying set of events measures the average number of bits needed to identify an event drawn from the set, if a coding scheme is used that is optimized for an "artificial" probability distribution $q$, rather than the "true" distribution $p$.
+
+    Logistic loss:  \cite{wiki:classification_loss_func}
+    \[ V(f({\vec  {x}}),y)={\frac  {1}{\ln 2}}\ln(1+e^{{-yf({\vec  {x}})}}) \]
+    \[ log(1+e^{−h_{w}(x_{i})y_{i}}) \]
+
+    Cross entropy loss (Log Loss):
+    \[ V(f(\vec{x}),t) = -t\ln(f(\vec{x}))-(1-t)\ln(1-f(\vec{x})) \]
+
+    Entropy:
+    \[ \mathrm {H} (X)=-\sum _{i=1}^{n}{\mathrm {P} (x_{i})\log _{b}\mathrm {P} (x_{i})} \]
+    The conditional entropy of $Y$ given $X$ is defined as
+    \[ \mathrm {H} (Y|X)\ =-\sum _{x\in {\mathcal {X}},y\in {\mathcal {Y}}}p(x,y)\log {\frac {p(x,y)}{p(x)}} \]
+
+    For discrete probability distributions $p$ and $q$ with the same support $\mathcal {X}$ this means
+    \[ H(p,q)=-\sum _{x\in {\mathcal {X}}}p(x)\,\log q(x) \]
+    Let $P$ and $Q$ be probability density functions of $p$ and $q$ with respect to $r$. Then
+    \[ H(p,q)=-\int _{\mathcal {X}}P(x)\,\log Q(x)\,dr(x) \]
+
+*** Kullback-Leibler(KL) Divergence
+*** Hinge Loss
+    In machine learning, the hinge loss is a loss function used for training classifiers.
+    \[ \ell(y) = \max(0, 1-t \cdot y) \]
+*** Exponential Loss
+    It penalizes incorrect predictions more than Hinge loss and has a larger gradient.
+    \[ V(f({\vec {x}}),y)=e^{-\beta yf({\vec {x}})} \]
+
+** Others
+*** Likelihood Loss
+*** Gold Standard Loss(0-1 loss)
+    In statistics and decision theory, a frequently used loss function is the 0-1 loss function:
+ \begin{equation}
+ \label{eq:13}
+ L(\hat{y}, y) = I(\hat{y} \ne y)
+ \end{equation}
+
+ where $I$ is the [[https://en.wikipedia.org/wiki/Indicator_function][indicator notation]].
+
+ \begin{equation}
+ \label{eq:20}
+ \mathbf {1} _{A}(x):={\begin{cases}1&{\text{if }}x\in A,\\0&{\text{if }}x\notin A.\end{cases}}
+ \end{equation}
+*** Perceptron Loss
+** TODO Advantage And Disadvantage Of Every Loss Functions
+* Optimization
+* Performance Measures for Machine Learning
+  The metrics that you choose to evaluate your machine learning model is very important. Choice of metrics influences how the performance of machine learning algorithms is measured and compared.[fn:7]
+
+  - Classification Accuracy
+  - Logarithmic Loss
+  - Confusion Matrix
+  - Area under Curve
+  - F1 Score
+  - Mean Absolute Error
+  - Mean Squared Error
+** Confusion Matrix
+   In the field of machine learning and specifically the problem of statistical classification, a confusion matrix, also known as an error matrix[fn:6].
+
+   |                    | Actual Positive | Actual Negative |
+   |--------------------+-----------------+-----------------|
+   | Predicted Positive | TP              | FP              |
+   | Predicted Negative | FN              | TN              |
+
+   #+CAPTION: Confusion Matrix 1
+  [[./figures/Confusion Matrix 1.png]]
+
+
+   #+CAPTION: Confusion Matrix 2
+   [[./figures/ConfusionMatrix.png]]
+
+   - True Positives :: The cases in which we predicted YES and the actual output was also YES.
+   - True Negatives :: The cases in which we predicted NO and the actual output was NO.
+   - False Positives :: The cases in which we predicted YES and the actual output was NO.
+   - False Negatives :: The cases in which we predicted NO and the actual output was YES.
+
+   When to minimise what?  \\
+   There’s no hard rule that says what should be minimised in all the situations. It purely depends on the business needs and the context of the problem you are trying to solve. Based on that, we might want to minimise either False Positives or False negatives.
+
+   1. Minimising False Negatives
+      Missing a cancer patient will be a huge mistake as no further examination will be done on them. So minimising False Negative is more important.
+   2. Minimising False Positives
+      In case of Spam email classification, minimising False positives is more important than False Negatives.
+** Classification Performance Metrics
+*** accuracy (ACC)
+
+\begin{equation}
+\label{eq:1}
+\mathrm {ACC} ={\frac {\mathrm {TP} +\mathrm {TN} }{P+N}}={\frac {\mathrm {TP} +\mathrm {TN} }{\mathrm {TP} +\mathrm {TN} +\mathrm {FP} +\mathrm {FN} }}
+\tag{1}
+\end{equation}
+
+  - When to use Accuracy: Accuracy is a good measure when the target variable classes in the data are nearly balanced.[fn:8]
+  - When NOT to use Accuracy: Accuracy should *NEVER* be used as a measure when the target variable classes in the data are a majority of one class.
+*** Logarithmic Loss
+
+\begin{equation}
+\label{eq:2}
+LogarithmicLoss = \frac{-1}{N}\sum_{i=1}^{N}\sum_{j=1}^{M}y_{ij}*log(p_{ij})
+\tag{2}
+\end{equation}
+  where,
+   - $y_{ij}$, indicates whether sample i belongs to class j or not
+   - $p_{ij}$, indicates the probability of sample i belonging to class j
+   Log Loss has no upper bound and it exists on the range [0, ∞). Log Loss nearer to 0 indicates higher accuracy, whereas if the Log Loss is away from 0 then it indicates lower accuracy.
+
+    In general, minimising Log Loss gives greater accuracy for the classifier.
+*** Precision or Positive Predictive Value (PPV)
+    Precision is a measure that the proportion of prediction true positives in all the prediction positives.
+
+\begin{equation}
+\label{eq:3}
+\mathrm {PPV} ={\frac {\mathrm {TP} }{\mathrm {TP} +\mathrm {FP} }}
+\tag{3}
+\end{equation}
+*** Recall,  Sensitivity or  True Positive Rate(TPR)
+    Recall is a measure that the proportion of prediction true positives in all the actual positives.
+
+\begin{equation}
+\label{eq:TPR}
+\mathrm {TPR} ={\frac {\mathrm {TP} }{P}}={\frac {\mathrm {TP} }{\mathrm {TP} +\mathrm {FN} }}=1-\mathrm {FNR}
+\tag{4}
+\end{equation}
+
+    When to use Precision and When to use Recall?
+    - *Precision* is about being precise. So even if we managed to capture only one cancer case, and we captured it correctly, then we are 100% precise.
+    - *Recall* is not so much about capturing cases correctly but more about capturing all cases that have “cancer” with the answer as “cancer”. So if we simply always say every case as “cancer”, we have 100% recall.
+
+*** ROC & AUC
+    ROC(Receiver Operating Characteristic)
+
+    AUC(Area Under Curve)
+
+    在不同的应用任务中，我们可根据任务需求来采用不同的阈值。例如，若我们更重视“查准率”(Precision)，则可以把阈值设置的大一些，让分类器的预测结果更有把握；若我们更重视“查全率”(Recall)，则可以把阈值设置的小一些，让分类器预测出更多的正例。
+     *ROC曲线则是从阈值选取角度出发来研究学习器泛化性能的有力工具*.
+**** ROC
+     The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings.[fn:9]
+
+     the ROC curve can be generated by plotting the cumulative distribution function (area under the probability distribution from $-\infty$ to the discrimination threshold) of the detection probability in the y-axis versus the cumulative distribution function of the false-alarm probability on the x-axis.
+     *FPR \ref{eq:TPR} on the x-axis and TPR \ref{eq:FPR} on the y-axis*.
+     #+CAPTION: ROC curve
+     [[./figures/ROC.png]]
+
+    \begin{equation}
+    \label{eq:FPR}
+    \mathrm {FPR} ={\frac {\mathrm {FP} }{N}}={\frac {\mathrm {FP} }{\mathrm {FP} +\mathrm {TN} }}=1-\mathrm {TNR}
+    \tag{5}
+    \end{equation}
+     ROC space and Curves in ROC space.[fn:9]
+
+
+     主要作用:
+      1. ROC曲线能很容易的查出任意阈值对学习器的泛化性能影响。
+      2.有助于选择最佳的阈值。ROC曲线越靠近左上角，模型的准确性就越高。最靠近左上角的ROC曲线上的点是分类错误最少的最好阈值，其假正例和假反例总数最少。
+      3.可以对不同的学习器比较性能。将各个学习器的ROC曲线绘制到同一坐标中，直观地鉴别优劣，靠近左上角的ROC曲所代表的学习器准确性最高。
+     优点:
+     - 该方法简单、直观、通过图示可观察分析学习器的准确性，并可用肉眼作出判断。ROC曲线将真正例率和假正例率以图示方法结合在一起，可准确反映某种学习器真正例率和假正例率的关系，是检测准确性的综合代表。
+     - ROC曲线不固定阈值，允许中间状态的存在，利于使用者结合专业知识，权衡漏诊与误诊的影响，选择一个更加的阈值作为诊断参考值。
+**** AUC
+     在进行学习器的比较时，若一个学习器的ROC曲线被另一个学习器的曲线完全“包住”，则可断言后者的性能优于前者；若两个学习器的ROC曲线发生交叉，则难以一般性的断言两者孰优孰劣。此时如果一定要进行比较，则比较合理的判断依据是比较 *ROC曲线下的面积*.
+     TODO fix Mann-Whitney U test[fn:10]
+
+     AUC是衡量 *二分类模型* 优劣的一种评价指标， *表示预测的正例排在负例前面的概率* 。AUC和Mann-Whitney U test[fn:10](曼-慧特尼U检验)有密切的联系。从Mann-Whitney U statistic的角度来解释，AUC就是从所有正样本中随机选择一个样本，从所有负样本中随机选择一个样本，然后根据你的学习器对两个随机样本进行预测，把正样本预测为正例的概率，把负样本预测为正例的概率，>的概率就等于AUC。所以AUC反映的是分类器对样本的排序能力。
+
+     AUC的计算方法同时考虑了学习器对于正例和负例的分类能力，在样本不平衡的情况下，依然能够对分类器做出合理的评价。 *AUC对样本类别是否均衡并不敏感*, 这也是不均衡样本通常用AUC评价学习器性能的一个原因。
+
+     在多分类问题下能不能使用ROC曲线来衡量模型性能? 如果确实需要在多分类问题中用ROC曲线的话，可以转化为多个“一对多”的问题。即把其中一个当作正例，其余当作负例来看待，画出多个ROC曲线。
+*** F1 Score
+    In statistical analysis of binary classification, the F1 score (also F-score or F-measure) is a measure of a test's accuracy.[fn:12]
+
+    The F1 score is the harmonic average of the precision and recall, where an F1 score reaches its best value at 1 (perfect precision and recall) and worst at 0.
+\begin{equation}
+\label{eq:5}
+F_{1}=\left({\frac {\mathrm {recall} ^{-1}+\mathrm {precision} ^{-1}}{2}}\right)^{-1}=2\cdot {\frac {\mathrm {precision} \cdot \mathrm {recall} }{\mathrm {precision} +\mathrm {recall} }}
+\tag{7}
+\end{equation}
+    The general formula for positive real β is:
+
+\begin{equation}
+\label{eq:6}
+    F_\beta = (1 + \beta^2) \cdot \frac{\mathrm{precision} \cdot \mathrm{recall}}{(\beta^2 \cdot \mathrm{precision}) + \mathrm{recall}}  = \frac {(1 + \beta^2) \cdot \mathrm{true\ positive} }{(1 + \beta^2) \cdot \mathrm{true\ positive} + \beta^2 \cdot \mathrm{false\ negative} + \mathrm{false\ positive}}\,
+.
+\end{equation}
+*** Mean Absolute Error(MAE)
+    In statistics, mean absolute error (MAE) is a measure of difference between two continuous variables.
+
+    Mean Absolute Error is the average of the difference between the Original Values and the Predicted Values.
+
+    It gives us the measure of how far the predictions were from the actual output.
+
+    However, they don’t gives us any idea of the direction of the error
+
+    The Mean Absolute Error is given by:
+
+\begin{equation}
+\label{eq:7}
+    \mathrm {MAE} ={\frac {\sum _{i=1}^{n}\left|y_{i}-x_{i}\right|}{n}}={\frac {\sum _{i=1}^{n}\left|e_{i}\right|}{n}}.
+\end{equation}
+
+     The Mean Error is given by:
+\begin{equation}
+\label{eq:8}
+    \mathrm {ME} ={\frac {\sum _{i=1}^{n}y_{i}-x_{i}}{n}}.
+\end{equation}
+*** Mean Squared Error(MSE)
+    In statistics, the mean squared error (MSE) or mean squared deviation (MSD) of an estimator measures the average of the squares of the errors—that is, the average squared difference between the estimated values and what is estimated.
+
+    The advantage of MSE being that it is easier to compute the gradient, whereas Mean Absolute Error requires complicated linear programming tools to compute the gradient. As, we take square of the error, the effect of larger errors become more pronounced then smaller error, hence the model can now focus more on the larger errors.
+\begin{equation}
+\label{eq:11}
+    \operatorname {MSE} ={\frac {1}{n}}\sum _{i=1}^{n}(Y_{i}-{\hat {Y_{i}}})^{2}.
+\end{equation}
+
+    TODO: Fix mean squared prediction error[fn:13]
+
+    the MSE is often called the mean squared prediction error[fn:13], and is computed as
+\begin{equation}
+\label{eq:10}
+\operatorname {MSPE} ={\frac {1}{q}}\sum_{i=n+1}^{n+q}(Y_{i}-{\hat {Y_{i}}})^{2}.
+\end{equation}
+
+
+    Proof of variance and bias relationship
+\begin{equation}
+\label{eq:9}
+\begin{aligned}\operatorname {MSE} ({\hat {\theta }})&=\operatorname {E} _{\hat {\theta }}\left[({\hat {\theta }}-\theta )^{2}\right]\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]+\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}\right]\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)^{2}+2\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)+\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}\right]\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)^{2}\right]+\operatorname {E} _{\hat {\theta }}\left[2\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)\right]+\operatorname {E} _{\hat {\theta }}\left[\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}\right]\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)^{2}\right]+2\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)\operatorname {E} _{\hat {\theta }}\left[{\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right]+\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}&&\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta ={\text{const.}}\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)^{2}\right]+2\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)+\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}&&\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]={\text{const.}}\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)^{2}\right]+\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}\\&=\operatorname {Var} _{\hat {\theta }}({\hat {\theta }})+\operatorname {Bias} _{\hat {\theta }}({\hat {\theta }},\theta )^{2}\end{aligned}
+\end{equation}
+* Ten Examples of Machine Learning Problems
+   1. Spam Detection  \\
+    Given email in an inbox, identify those email messages that are spam and those that are not.Having a model of this problem would allow a program to leave non-spam emails in the inbox and move spam emails to a spam folder.
+   2. Credit Card Fraud Detection  \\
+    Given credit card transactions for a customer in a month, identify those transactions that were made by the customer and those that were not. A program with a model of this decision could refund those transactions that were fraudulent.
+   3. Digit Recognision  \\
+    Given a zip codes hand written on envelops, identify the digit for each hand written character. A model of this problem would allow a computer program to read and understand handwritten zip codes and sort envelops by geographic region.
+   4. Speech Understanding  \\
+    Given an utterance from a user, identify the specific request made by the user. A model of this problem would allow a program to understand and make an attempt to fulfil that request. The iPhone with Siri has this capability.
+   5. Face Detection
+    Given a digital photo album of many hundreds of digital photographs, identify those photos that include a given person. A model of this decision process would allow a program to organize photos by person. Some cameras and software like iPhoto has this capability.
+   6. Product Recommendation  \\
+    Given a purchase history for a customer and a large inventory of products, identify those products in which that customer will be interested and likely to purchase. A model of this decision process would allow a program to make recommendations to a customer and motivate product purchases. Amazon has this capability. Also think of Facebook, GooglePlus and Facebook that recommend users to connect with you after you sign-up.
+   7. Medical Diagnosis  \\
+    Given the symptoms exhibited in a patient and a database of anonymized patient records, predict whether the patient is likely to have an illness. A model of this decision problem could be used by a program to provide decision support to medical professionals.
+   8. Stock Trading  \\
+    Given the current and past price movements for a stock, determine whether the stock should be bought, held or sold. A model of this decision problem could provide decision support to financial analysts.
+   9. Customer segmentation  \\
+    Given the pattern of behaviour by a user during a trial period and the past behaviours of all users, identify those users that will convert to the paid version of the product and those that will not. A model of this decision problem would allow a program to trigger customer interventions to persuade the customer to covert early or better engage in the trial.
+   10. Shape Detection  \\
+    Given a user hand drawing a shape on a touch screen and a database of known shapes, determine which shape the user was trying to draw. A model of this decision would allow a program to show the platonic version of that shape the user drew to make crisp diagrams. The Instaviz iPhone app does this.
+
+* Algorithms
+  [[https://en.wikipedia.org/wiki/List_of_algorithms][List of algorithms]]
+** Supervised learning
+*** Support Vector Machines
+*** linear regression
+*** logistic regression
+*** naive Bayes
+*** linear discriminant analysis
+*** decision trees
+*** k-nearest neighbor algorithm
+*** Neural Networks (Multilayer perceptron)
+*** Similarity learning
+** Unsupervised learning
+*** Clustering
+    [[https://en.wikipedia.org/wiki/Cluster_analysis][Cluster analysis]]
+**** hierarchical clustering
+**** k-means
+**** mixture models
+**** DBSCAN
+**** OPTICS algorithm
+*** Anomaly detection
+**** Local Outlier Factor
+*** Neural Networks
+**** Autoencoders
+**** Deep Belief Nets
+**** Hebbian Learning
+**** Generative Adversarial Networks
+**** Self-organizing map
+*** Approaches for learning latent variable models such as
+**** Expectation–maximization algorithm (EM)
+**** Method of moments
+**** Blind signal separation techniques
+***** Principal component analysis
+***** Independent component analysis
+***** Non-negative matrix factorization
+***** Singular value decomposition
+** Reinforcement learning
+   [[https://en.wikipedia.org/wiki/Reinforcement_learning?action=edit&oldid=876586730&wteswitched=1][Reinforcement learning]]
+
+* FQA
+
+* Footnotes
+[fn:24] [[https://en.wikipedia.org/wiki/Levenshtein_distance][wiki Levenshtein distance]]
+
+[fn:23] [[https://en.wikipedia.org/wiki/Edit_distance][wiki Edit distance]]
+
+[fn:22] [[https://en.wikipedia.org/wiki/Jaccard_index][wiki Jaccard index]]
+
+[fn:21] [[https://en.wikipedia.org/wiki/Hamming_distance][wiki Hamming distance]]
+
+[fn:20] [[https://en.wikipedia.org/wiki/Cosine_similarity][wiki Cosine similarity]]
+
+[fn:19] [[https://dzone.com/articles/machine-learning-measuring][Machine Learning: Measuring Similarity and Distance]]
+
+[fn:18] [[https://blog.csdn.net/u010167269/article/details/51627338][欧氏距离与马氏距离]]
+
+[fn:17] [[https://stats.stackexchange.com/questions/62092/bottom-to-top-explanation-of-the-mahalanobis-distance][Bottom to top explanation of the Mahalanobis distance?]]
+
+[fn:16] [[https://en.wikipedia.org/wiki/Mahalanobis_distance][wiki Mahalanobis distance]]
+
+[fn:15] [[https://en.wikipedia.org/wiki/Taxicab_geometry][wiki Taxicab geometry Manhattan Distance]]
+
+[fn:14] [[https://en.wikipedia.org/wiki/Euclidean_distance][wiki Euclidean distance]]
+
+[fn:13] [[https://en.wikipedia.org/wiki/Mean_squared_prediction_error][wiki Mean squared prediction error]]
+
+[fn:12] [[https://en.wikipedia.org/wiki/F1_score][wiki F1 score]]
+
+[fn:11] [[https://en.wikipedia.org/wiki/Similarity_measure][wiki Similarity measure]]
+
+[fn:10] [[https://en.wikipedia.org/wiki/Mann%25E2%2580%2593Whitney_U_test][wiki Mann–Whitney U test]]
+
+[fn:9] [[https://en.wikipedia.org/wiki/Receiver_operating_characteristic][wiki Receiver operating characteristic]]
+
+[fn:8] [[https://medium.com/greyatom/performance-metrics-for-classification-problems-in-machine-learning-part-i-b085d432082b][Performance Metrics for Classification problems in Machine Learning]]
+
+[fn:7] [[https://towardsdatascience.com/metrics-to-evaluate-your-machine-learning-algorithm-f10ba6e38234][Metrics to Evaluate your Machine Learning Algorithm]]
+
+[fn:6] [[https://en.wikipedia.org/wiki/Confusion_matrix][wiki Confusion matrix]]
+
+[fn:5] [[https://mp.weixin.qq.com/s?__biz=MzI5NDMzMjY1MA==&mid=2247484313&idx=1&sn=568015a62bf99ca5b6bd282b465244be&chksm=ec65321cdb12bb0a772814204ac5f48136c99f44a39ff34f5bde115ab5630948a40f747a39f0&scene=21#wechat_redirect][分类中解决类别不平衡问题]]
+
+[fn:4] [[http://ai.51cto.com/art/201810/585105.htm][数据科学家须知的 19 个机器学习算法]]
+
+[fn:3] [[https://dzone.com/articles/top-machine-learning-algorithm-you-should-know-to][Top Machine Learning Algorithms You Should Know to Become a Data Scientist]]
+
+[fn:2] [[https://towardsdatascience.com/types-of-machine-learning-algorithms-you-should-know-953a08248861][Types of Machine Learning Algorithms You Should Know]]
+
+[fn:1] [[https://en.proft.me/2015/12/24/types-machine-learning-algorithms/][Types of machine learning algorithms]]
