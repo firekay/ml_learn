@@ -1,0 +1,77 @@
+#+OPTIONS: ^:nil
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
+#+TITLE: Machine Learning
+#+AUTHOR: Xu Zhenkai
+#+OPTIONS: toc:nil ^:{}
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage[version=3]{mhchem}
+#+latex_header: \usepackage{makeidx}
+#+latex_header: \makeindex
+# This ridiculousness is to make the index start in the middle of a page.
+# https://tex.stackexchange.com/questions/23870/index-shouldnt-start-new-page
+#+latex_header: \makeatletter
+#+latex_header: \renewenvironment{theindex}
+#+latex_header:                {\section*{\indexname}%
+#+latex_header:                 \@mkboth{\MakeUppercase\indexname}%
+#+latex_header:                         {\MakeUppercase\indexname}%
+#+latex_header:                 \thispagestyle{plain}\parindent\z@
+#+latex_header:                 \parskip\z@ \@plus .3\p@\relax
+#+latex_header:                 \columnseprule \z@
+#+latex_header:                 \columnsep 35\p@
+#+latex_header:                 \let\item\@idxitem}
+#+latex_header:                {}
+#+latex_header: \makeatother
+
+#+latex_header: \usepackage{glossaries}
+#+latex_header: \makeglossaries
+#+latex_header_extra: \newglossaryentry{acronym}{name={acronym},description={An acronym is an abbreviation used as a word which is formed from the initial components in a phrase or a word. Usually these components are individual letters (as in NATO or laser) or parts of words or names (as in Benelux)}}
+#+latex_header_extra: \newacronym{tla}{TLA}{Three Letter Acronym}
+
+\maketitle
+\tableofcontents
+
+  [[https://en.wikipedia.org/wiki/List_of_algorithms][List of algorithms]]
+* Supervised Learning
+** Support Vector Machines
+** Linear Regression
+** Logistic Regression
+** Naive Bayes
+** Linear Discriminant Analysis
+** Decision Trees
+** K-Nearest Neighbor Algorithm
+** Neural Networks (Multilayer Perceptron)
+** Similarity Learning
+* Unsupervised Learning
+** Clustering
+   [[Https://En.Wikipedia.Org/Wiki/Cluster_analysis][Cluster Analysis]]
+*** Hierarchical Clustering
+*** K-Means
+*** Mixture Models
+*** Dbscan
+*** Optics Algorithm
+** Anomaly Detection
+*** Local Outlier Factor
+** Neural Networks
+*** Autoencoders
+*** Deep Belief Nets
+*** Hebbian Learning
+*** Generative Adversarial Networks
+*** Self-Organizing Map
+** Approaches For Learning Latent Variable Models Such As
+*** Expectation–Maximization Algorithm (Em)
+*** Method Of Moments
+*** Blind Signal Separation Techniques
+**** Principal Component Analysis
+**** Independent Component Analysis
+**** Non-Negative Matrix Factorization
+**** Singular Value Decomposition
+* Reinforcement Learning
+   [[Https://En.Wikipedia.Org/Wiki/Reinforcement_learning?Action=Edit&Oldid=876586730&Wteswitched=1][Reinforcement Learning]]
+
+
+
+* References
+<<bibliography link>>
+
+bibliographystyle:unsrt
+bibliography:MachineLearning.bib
