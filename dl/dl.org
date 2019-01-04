@@ -1,0 +1,56 @@
+#+OPTIONS: ^:nil
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
+#+TITLE: Deep Learning
+#+AUTHOR: Xu Zhenkai
+#+OPTIONS: toc:nil ^:{}
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage[version=3]{mhchem}
+#+latex_header: \usepackage{makeidx}
+#+latex_header: \makeindex
+# This ridiculousness is to make the index start in the middle of a page.
+# https://tex.stackexchange.com/questions/23870/index-shouldnt-start-new-page
+#+latex_header: \makeatletter
+#+latex_header: \renewenvironment{theindex}
+#+latex_header:                {\section*{\indexname}%
+#+latex_header:                 \@mkboth{\MakeUppercase\indexname}%
+#+latex_header:                         {\MakeUppercase\indexname}%
+#+latex_header:                 \thispagestyle{plain}\parindent\z@
+#+latex_header:                 \parskip\z@ \@plus .3\p@\relax
+#+latex_header:                 \columnseprule \z@
+#+latex_header:                 \columnsep 35\p@
+#+latex_header:                 \let\item\@idxitem}
+#+latex_header:                {}
+#+latex_header: \makeatother
+
+#+latex_header: \usepackage{glossaries}
+#+latex_header: \makeglossaries
+#+latex_header_extra: \newglossaryentry{acronym}{name={acronym},description={An acronym is an abbreviation used as a word which is formed from the initial components in a phrase or a word. Usually these components are individual letters (as in NATO or laser) or parts of words or names (as in Benelux)}}
+#+latex_header_extra: \newacronym{tla}{TLA}{Three Letter Acronym}
+
+\maketitle
+\tableofcontents
+
+* LSTM
+  In theory, RNNs are absolutely capable of handling such “long-term dependencies.” A human could carefully pick parameters for them to solve toy problems of this form. Sadly, in practice, RNNs don’t seem to be able to learn them. The problem was explored in depth by Hochreiter (1991) [German] and Bengio, et al. (1994), who found some pretty fundamental reasons why it might be difficult. Thankfully, LSTMs don’t have this problem! \cite{lstm1}
+  [[./figures/lstm1.png]]
+
+  [[./figures/lstm2.png]]
+
+  [[./figures/lstm3.png]]
+
+  [[./figures/lstm4.png]]
+
+** Variants On LSTM1
+   [[./figures/lstmV1.png]]
+
+   [[./figures/lstmV2.png]]
+
+** Variants On LSTM2
+   [[./figures/lstmV3.png]]
+
+
+* References
+<<bibliography link>>
+
+bibliographystyle:unsrt
+bibliography:DeepLearning.bib

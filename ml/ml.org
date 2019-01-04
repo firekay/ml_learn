@@ -34,6 +34,25 @@
 * Supervised Learning
 ** Support Vector Machines
 ** Linear Regression
+   Like all forms of regression analysis, linear regression focuses on the *conditional probability distribution* of the response given the values of the predictors, rather than on the *joint probability distribution* of all of these variables, which is the domain of multivariate analysis.
+
+  \begin{equation}
+  \label{eq:1}
+     y_{i}=\beta _{0}1+\beta _{1}x_{i1}+\cdots +\beta _{p}x_{ip}+\varepsilon _{i}=\mathbf {x} _{i}^{\mathsf {T}}{\boldsymbol {\beta }}+\varepsilon _{i},\qquad i=1,\ldots ,n,
+  \end{equation}
+  where $^T$ denotes the transpose, so that $x_{i}^{T} \beta$ is the inner product between vectors $x_i$ and $\beta$.
+
+  Often these n equations are stacked together and written in matrix notation as
+
+  \[ \mathbf {y} =X{\boldsymbol {\beta }}+{\boldsymbol {\varepsilon }}, \]
+
+  基於均方誤差損失函數的Linear Regression有一個致命問題就會預測結果: 低偏差高方差這個是均方誤差損失函數的問題同時模型的解釋性會很差.
+
+  L2解決了模型的準確率的問題但是可解釋性依然沒有得到解決,而且當時的計算機算力不行,特徵多了計算起來非常費時間,於是人們又開始了新算法的研究之路
+
+  最後提出來了L1正則,其思路是儘量把一些特徵壓縮到0,這樣很顯然模型的預測biase會變大一些,但是模型的variance會降低,同時計算速度會提高很多而且最重要的是模型的解釋性能會變得很強
+
+  最後就是L1和L2正則結合的elastic net了,這個算法克服了Lasso在一些場景的限制
 ** Logistic Regression
 ** Naive Bayes
 ** Linear Discriminant Analysis
@@ -67,7 +86,6 @@
 **** Singular Value Decomposition
 * Reinforcement Learning
    [[Https://En.Wikipedia.Org/Wiki/Reinforcement_learning?Action=Edit&Oldid=876586730&Wteswitched=1][Reinforcement Learning]]
-
 
 
 * References
