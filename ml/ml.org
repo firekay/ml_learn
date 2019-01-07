@@ -33,6 +33,11 @@
   [[https://en.wikipedia.org/wiki/List_of_algorithms][List of algorithms]]
 * Supervised Learning
 ** Support Vector Machines
+   In machine learning, support-vector machines (SVMs, also support-vector networks[1]) are supervised learning models with associated learning algorithms that analyze data used for classification and regression analysis.
+
+   In addition to performing linear classification, SVMs can efficiently perform a non-linear classification using what is called the kernel trick, implicitly mapping their inputs into high-dimensional feature spaces.
+
+   The *support-vector clustering algorithm*, created by Hava Siegelmann and Vladimir Vapnik, applies the statistics of support vectors, developed in the support vector machines algorithm, to categorize unlabeled data, and is one of the *most widely used clustering algorithms* in industrial applications.
 ** Linear Regression
    Like all forms of regression analysis, linear regression focuses on the *conditional probability distribution* of the response given the values of the predictors, rather than on the *joint probability distribution* of all of these variables, which is the domain of multivariate analysis.
 
@@ -54,6 +59,30 @@
 
   最後就是L1和L2正則結合的elastic net了,這個算法克服了Lasso在一些場景的限制
 ** Logistic Regression
+   In statistics, the logistic model uses a logistic function to model a binary dependent variable.
+
+   The logistic function is a sigmoid function, which takes any real input $t$, ($t \in \mathbb {R}$), and outputs a value between zero and one
+
+   The logistic function is defined as follows:
+  \begin{equation}
+  \label{eq:2}
+  \sigma (t)={\frac {e^{t}}{e^{t}+1}}={\frac {1}{1+e^{-t}}}
+  \end{equation}
+
+  The regression coefficients are usually estimated using maximum likelihood estimation.
+
+  逻辑回归假设因变量 y 服从伯努利分布，而线性回归假设因变量 y 服从高斯分布。
+
+  一个好的代价函数需要满足两个最基本的要求：能够评价模型的准确性，对参数  $\theta$ 可微。
+
+  代价函数: 在线性回归中，最常用的是均方误差(Mean squared error), 在逻辑回归中，最常用的是代价函数是交叉熵(Cross Entropy).
+
+
+\begin{equation}
+\label{eq:3}
+  J(\theta) = -\frac{ 1 }{ m }[\sum_{ i=1 }^{ m } ({y^{(i)} \log h_\theta(x^{(i)}) + (1-y^{(i)}) \log (1-h_\theta(x^{(i)})})]
+\end{equation}
+
 ** Naive Bayes
 ** Linear Discriminant Analysis
 ** Decision Trees
