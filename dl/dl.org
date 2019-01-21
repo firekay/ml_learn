@@ -1,16 +1,3 @@
-#+OPTIONS: ^:nil
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
-#+TITLE: Deep Learning
-#+AUTHOR: Xu Zhenkai
-#+OPTIONS: toc:nil ^:{}
-#+LATEX_HEADER: \usepackage{natbib}
-#+LATEX_HEADER: \usepackage[version=3]{mhchem}
-#+latex_header: \usepackage{makeidx}
-#+latex_header: \makeindex
-# This ridiculousness is to make the index start in the middle of a page.
-# https://tex.stackexchange.com/questions/23870/index-shouldnt-start-new-page
-#+latex_header: \makeatletter
-#+latex_header: \renewenvironment{theindex}
 #+latex_header:                {\section*{\indexname}%
 #+latex_header:                 \@mkboth{\MakeUppercase\indexname}%
 #+latex_header:                         {\MakeUppercase\indexname}%
@@ -30,14 +17,42 @@
 \maketitle
 \tableofcontents
 
-* LSTM
-  In theory, RNNs are absolutely capable of handling such “long-term dependencies.” A human could carefully pick parameters for them to solve toy problems of this form. Sadly, in practice, RNNs don’t seem to be able to learn them. The problem was explored in depth by Hochreiter (1991) [German] and Bengio, et al. (1994), who found some pretty fundamental reasons why it might be difficult. Thankfully, LSTMs don’t have this problem! \cite{lstm1}
+* LSTMs
+** LSTM(Long Short Term Memory networks)
+  One of the appeals of RNNs is the idea that they might be able to connect previous information to the present task.
+
+  Sometimes, we only need to look at recent information to perform the present task(e.g.: The clouds are in the _sky_). But there are also cases where we need more context(e.g.: I grew up in France... I speak fluent _French_)
+
+  Its entirely possible for the gap between the relevant information and the point there is needed to become very large. Unfortunately as the gap grows, RNNs become unable to learn to connect the information. WHY? \\
+  This is because when the net is very deep, then will be very difficult to train due to the *exploding and the vanishing gradient problems*. Both problems are caused by RNN's iterative nature, whose gradient is raised to a high power. These iterated matrix powers caused the gradient to grow or to shrink at a rate that is exponential in the numbers of time-steps.
+
+  LSTMs are explicitly designed to avoid the long-term dependency problem.
+
+  The key to LSTMs is the *cell state*.
+
+  Gates are a way to optionally let information through. They are composed out of a sigmoid neural net layer and a pointwise multiplication operation.
+  [[./figures/pointwise multiplication operation.png]]
+  An LSTM has three of these gates, *to protect and control the cell state*.
+
+
+  In theory, RNNs are absolutely capable of handling such "long-term dependencies." A human could carefully pick parameters for them to solve toy problems of this form. Sadly, in practice, RNNs don’t seem to be able to learn them. The problem was explored in depth by Hochreiter (1991) [German] and Bengio, et al. (1994), who found some pretty fundamental reasons why it might be difficult. Thankfully, LSTMs don’t have this problem! \cite{lstm1}
+
+  #+CAPTION: Forget Gate(decide what old information to thrown away from the cell state)
   [[./figures/lstm1.png]]
 
+  $i_t$: decides which values will update.  \\
+  $\tilde{C_t}$: decides new candidate values could be added to the state.
+  #+CAPTION: Input Gate(decide what new information to store in the cell state)
   [[./figures/lstm2.png]]
 
+
+  #+CAPTION: Update the old state to new state.
   [[./figures/lstm3.png]]
 
+  #+CAPTION: Union forget gate and input gate
+  [[./figures/lstm3.5.png]]
+
+  #+CAPTION: Output Gate(decide what information to output)
   [[./figures/lstm4.png]]
 
 ** Variants On LSTM1
@@ -45,12 +60,30 @@
 
    [[./figures/lstmV2.png]]
 
-** Variants On LSTM2
-   [[./figures/lstmV3.png]]
+** GRU(Gated Recurrent Unit)
+   It combines the forget and input gates into a single "update gate"
+   #+CAPTION: GRU(Gated Recurrent Unit)
+   [[./figures/gru.png]]
+** An Empirical Exploration of Recurrent Network Architectures
+   Standard RNNs suffer from both exploding and vanishing gradients. Both problems caused by
+  This is because when the net is very deep, then will be very difficult to train due to the *exploding and the vanishing gradient problems*. Both problems are caused by RNN's iterative nature, whose gradient is raised to a high power. These iterated matrix powers caused the gradient to grow or to shrink at a rate that is exponential in the numbers of time-steps.
 
 
+   文章作者做了多组实验检测各种不同结构的RNN在不同的问题上的表现, 得到的结论包括:
+
+    1. GRU在除了语言模型的其他地方比LSTM表现好
+    2. LSTM with dropout在语言模型上表现好, 有大的遗忘门偏置后表现更好
+    3. 在LSTM中, 各个门的重要性为: 遗忘门>输入门>输出门
+    4. 遗忘门在除了语言模型外的情况下影响非常大
+
+    语言模型的长期依赖效应强于其他场景
 * References
 <<bibliography link>>
 
 bibliographystyle:unsrt
 bibliography:DeepLearning.bib
+
+#  LocalWords:  Zhenkai indexname MakeUppercase thispagestyle parindent parskip
+#  LocalWords:  columnseprule columnsep makeatother usepackage makeglossaries
+#  LocalWords:  newglossaryentry newacronym tla TLA maketitle tableofcontents
+#  LocalWords:  png lstm et al
