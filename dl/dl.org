@@ -77,6 +77,79 @@
     4. 遗忘门在除了语言模型外的情况下影响非常大
 
     语言模型的长期依赖效应强于其他场景
+** LSTM Code
+   [[https://machinelearningmastery.com/reshape-input-data-long-short-term-memory-networks-keras/][How to Reshape Input Data for Long Short-Term Memory Networks in Keras]]
+*** LSTM Input shape
+    The input to every LSTM layer must be three-dimensional.
+
+    The three dimensions of this input are:  \\
+      - Samples. One sequence is one sample. A batch is comprised of one or more samples.
+      - Time Steps. One time step is one point of observation in the sample.
+      - Features. One feature is one observation at a time step.
+*** Tips for LSTM Input
+    This section lists some tips to help you when preparing your input data for LSTMs.
+
+    - The LSTM input layer must be 3D.
+    - The meaning of the 3 input dimensions are: samples, time steps, and features.
+    - The LSTM input layer is defined by the input_shape argument on the first hidden layer.
+    - The input_shape argument takes a tuple of two values that define the number of time steps and features.
+    - The number of samples is assumed to be 1 or more.
+    - The reshape() function on NumPy arrays can be used to reshape your 1D or 2D data to be 3D.
+    - The reshape() function takes a tuple as an argument that defines the new shape.
+* Coursera Deep Learning
+  Parameters W and b (w^{l} is (n^{[l]},  n^{[l-1]}) dimensions, and b^{l} is (n^{[l]}, 1) dimensions)
+** Logisstic Function
+   What is the difference between the cost function and the loss function for logistic regression?
+   The loss function computes the error for a single training example; the cost function is the average of the loss functions of the entire training set.
+
+* Transformer + Attention
+* Activation function
+** 性质
+   1. 非线性:线性的叠加还是线性.
+   2. 连续可微性: 因为使用了梯度, 所以连续可微是必要的(ReLU虽不连续, 但同样适合做激活函数) TODO: WHY?
+   3. 值域有限性: 输出优先的时候, 基于梯度下降的训练过程才能越来越稳定.
+   4. 单调性: 激活函数是单调的时候, 单层的神经网络才能保证是凸函数.
+   5. 具有单调导数的光滑函数: 简单有效原理
+   6. 函数值和输入近似相等: 如果满足这个条件, 当权重初始化为很小的随机数时, 神经网络的训练会很高效.
+** sigmoid
+** Tanh
+** Hard Tanh
+** ReLU, Leaky ReLU, Parametric ReLU, Randomized ReLU
+** ELU(Exponential Linear Unit)
+** Maxout
+** Softmax
+** LogSoftmax
+* Loss Function
+** MSELoss()
+** L1Loss
+** BCELoss(二分类)
+** BCEWithLogitsLoss(二分类)
+** NLLLoss(多分类中的负对数似然损失函数)
+** CrossEntropyLoss(多分类用的交叉熵损失函数)
+* Optimizer
+** SGD
+** Momentum(加速收敛)
+** AdaGrad(根据每个参数所有梯度历史平均值综合的平方根, 成反比地缩放参数, 能独立地适应调整所有模型的学习率, 实践中只在某些深度学习模型上效果不错)
+** RMSProp(Hiltom修改AdaGrad的梯度平方计算方式, 改变计算梯度平方累加方式为对应的指数衰减平均)
+** Aam(RMSProp与Momentum的结合, 优点: 经过偏执校正后, 每一次迭代学习率都有一个确定的范围, 从而使得参数比较平稳)
+* Regularization
+** L1(会产生更稀疏的解, L1正则化的稀疏性已广泛应用于特征选择机制)
+** L2(权值衰减, 通常只针对w, 不针对b)
+** Batch Normalization
+
+   一种非常简便而使用的加速收敛速度技术.
+
+   作用:
+     1. 使得模型训练收敛速度更快
+     2. 模型隐藏输出的特征分布更稳定, 更利于模型的学习
+
+   在训练模型时, 可以事先将特征去相关并使它们满足一个比较好的分布
+** Dropout
+
+   按一定概率将神经网络单元暂时从网络中丢弃, 这样模型更健壮(因不会太依赖某些局部的特征)
+
+   对于随机梯度下降来说, 由于是随机丢弃, 故而每一小批量都在训练不通的网络
+* [[https://github.com/facebook/prophet][prophet]]
 * References
 <<bibliography link>>
 
