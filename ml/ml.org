@@ -73,6 +73,9 @@
   最後提出來了 L1 正則,其思路是儘量把一些特徵壓縮到 0,這樣很顯然模型的預測 biase 會變大一些,但是模型的 variance 會降低,同時計算速度會提高很多而且最重要的是模型的解釋性能會變得很強
 
   最後就是 L1 和L2 正則結合的 elastic net 了,這個算法克服了 Lasso 在一些場景的限制
+    1. 當 P>>N(p 是特徵 N是數據量)時 Lasso 最多隻能選 N(為什麼是 N需要用矩陣的知識來簡單證明一下)個個特徵這顯然不是非常合理.
+　　2. 當某些特徵的相關性非常高,也就是所謂的組變量,Lasso 一般傾向於只選擇其中的一個也不關心究竟要選哪一個
+　　3. 對於一般 N>P 的情況,如果某些特徵與預測值之間的相關性很高,經驗證明預測的最終性能是 Lasso 占主導地位相比於 Ridge
 ** Logistic Regression
    In statistics, the logistic model uses a logistic function to model a binary dependent variable.
 
