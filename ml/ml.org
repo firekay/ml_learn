@@ -31,6 +31,21 @@
 \tableofcontents
 
   [[https://en.wikipedia.org/wiki/List_of_algorithms][List of algorithms]]
+* Introduction
+** What Is Machine Learning
+   Arthur Samuel(1959). The field of study that gives computers the ability to learn without being explicitly programmed.
+
+   Tom Mitchell(1998a). A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.
+** Supervised Learning
+   We are giving a data set and already known what our correct output look like, having an idea that there is a relationship between input and output.
+
+   Supervised Learning problems are categorized into "regression" and "classification".
+** Unsupervised Learning
+   Unsupervised learning allows us to approach problems with little or no idea what our results should look like.
+
+   We can derive structure by clustering the data based on relationships amoung the variables in the data.
+** Parameter Learning
+   Gradient Descent: The way we do this is by taking the derivative (the tangential line to a function) of our cost function.
 * Supervised Learning
 ** Support Vector Machines
    In machine learning, support-vector machines (SVMs, also support-vector networks[1]) are supervised learning models with associated learning algorithms that analyze data used for classification and regression analysis.
@@ -51,13 +66,13 @@
 
   \[ \mathbf {y} =X{\boldsymbol {\beta }}+{\boldsymbol {\varepsilon }}, \]
 
-  基於均方誤差損失函數的Linear Regression有一個致命問題就會預測結果: 低偏差高方差這個是均方誤差損失函數的問題同時模型的解釋性會很差.
+  基於均方誤差損失函數的 Linear Regression 有一個致命問題就會預測結果: 低偏差高方差這個是均方誤差損失函數的問題同時模型的解釋性會很差.
 
-  L2解決了模型的準確率的問題但是可解釋性依然沒有得到解決,而且當時的計算機算力不行,特徵多了計算起來非常費時間,於是人們又開始了新算法的研究之路
+  L2 解決了模型的準確率的問題但是可解釋性依然沒有得到解決,而且當時的計算機算力不行,特徵多了計算起來非常費時間,於是人們又開始了新算法的研究之路
 
-  最後提出來了L1正則,其思路是儘量把一些特徵壓縮到0,這樣很顯然模型的預測biase會變大一些,但是模型的variance會降低,同時計算速度會提高很多而且最重要的是模型的解釋性能會變得很強
+  最後提出來了 L1 正則,其思路是儘量把一些特徵壓縮到 0,這樣很顯然模型的預測 biase 會變大一些,但是模型的 variance 會降低,同時計算速度會提高很多而且最重要的是模型的解釋性能會變得很強
 
-  最後就是L1和L2正則結合的elastic net了,這個算法克服了Lasso在一些場景的限制
+  最後就是 L1 和L2 正則結合的 elastic net 了,這個算法克服了 Lasso 在一些場景的限制
 ** Logistic Regression
    In statistics, the logistic model uses a logistic function to model a binary dependent variable.
 

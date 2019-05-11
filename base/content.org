@@ -5,7 +5,7 @@
 * What Is ML
    1. The field of machine learning is concerned with the question of how to construct *computer programs* that *automatically improve* with experience. \\
     A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.
-   2. Vast amounts of data are being generated in many fields, and the statisticians’s job is to make sense of it all: to extract important patterns and trends, and to understand “what the data says”. We call this learning from data. \\
+   2. Vast amounts of data are being generated in many fields, and the statisticians’s job is to make sense of it all: to extract important patterns and trends, and to understand "what the data says". We call this learning from data. \\
       The Elements of Statistical Learning: Data Mining, Inference, and Prediction
    3. One of the most interesting features of machine learning is that it lies on the boundary of several different academic disciplines, principally computer science, statistics, mathematics, and engineering. … machine learning is usually studied as part of artificial intelligence, which puts it firmly into computer science …understanding why these algorithms work requires a certain amount of statistical and mathematical sophistication that is often missing from computer science undergraduates.
    4. Machine Learning is Hacking + Math & Statistics.
@@ -13,77 +13,77 @@
 * Class Imbalance
   类别不平衡 class-imbalance
 
-  主要介绍了分类中类别不均衡时学习中常用的算法及评价指标，算法主要从数据和模型两个层面介绍，数据层面的算法主要关于过采样和欠采样以及改进的算法，模型方面主要讲解了基于代价的敏感学习。评价指标主要讲解了 F1 度量、G-Mean 和 ROC 曲线 AUC 面积。
+  主要介绍了分类中类别不均衡时学习中常用的算法及评价指标,算法主要从数据和模型两个层面介绍,数据层面的算法主要关于过采样和欠采样以及改进的算法,模型方面主要讲解了基于代价的敏感学习.评价指标主要讲解了 F1 度量、G-Mean 和 ROC 曲线 AUC 面积.
 
-  如果不同类别的训练样例数目稍有差别，通常影响不大，但若差别很大，则会对学习过程造成困扰。例如有 998 个反例，但是正例只有 2 个，那么学习方法只需要返回一个永远将新样本预测为反例的学习器，就能达到 99.8%的精度；然而这样的学习器往往没有价值，因为它不能预测出任何正例。
+  如果不同类别的训练样例数目稍有差别,通常影响不大,但若差别很大,则会对学习过程造成困扰.例如有 998 个反例,但是正例只有 2 个,那么学习方法只需要返回一个永远将新样本预测为反例的学习器,就能达到 99.8%的精度;然而这样的学习器往往没有价值,因为它不能预测出任何正例.
 
-  类别不平衡（class-imbalance）就是指分类任务中不同类别的训练样例数目差别很大的情况。在现实的分类学习任务中，我们经常会遇到类别不平衡，例如在通过拆分法解决多分类问题时，即使原始问题中不同类别的训练样例数目相当，在使用 OvR（一对其余，One vs. Rest，简称 OvR）、MvM（多对多，Many vs. Many，简称 MvM）策略后产生的二分类任务扔可能出现类别不平衡现象.
+  类别不平衡(class-imbalance)就是指分类任务中不同类别的训练样例数目差别很大的情况.在现实的分类学习任务中,我们经常会遇到类别不平衡,例如在通过拆分法解决多分类问题时,即使原始问题中不同类别的训练样例数目相当,在使用 OvR(一对其余,One vs. Rest,简称 OvR)、MvM(多对多,Many vs. Many,简称 MvM)策略后产生的二分类任务扔可能出现类别不平衡现象.
 
 ** 解决类别不平衡问题
 *** 欠采样方法(undersampling)
-    直接对训练集中多数类样本进行“欠采样”（undersampling），即去除一些多数类中的样本使得正例、反例数目接近，然后再进行学习[fn:5]。
+    直接对训练集中多数类样本进行"欠采样"(undersampling),即去除一些多数类中的样本使得正例、反例数目接近,然后再进行学习[fn:5].
 **** 随机欠采样方法
 
-     随机欠采样顾名思义即从多数类 $S_{maj}$ 中随机选择一些样样本组成样本集 *E* 。然后将样本集 *E* 从 $S_{maj}$ 中移除。新的数据集 $S_{new-maj}=S_{maj}-E$ 。
+     随机欠采样顾名思义即从多数类 $S_{maj}$ 中随机选择一些样样本组成样本集 *E* .然后将样本集 *E* 从 $S_{maj}$ 中移除.新的数据集 $S_{new-maj}=S_{maj}-E$ .
 
      - 缺点
 
-       随机欠采样方法通过改变多数类样本比例以达到修改样本分布的目的，从而使样本分布较为均衡，但是这也存在一些问题。对于随机欠采样，由于采样的样本集合要少于原来的样本集合，因此会造成一些信息缺失，即将多数类样本删除有可能会导致分类器丢失有关多数类的重要信息。
+       随机欠采样方法通过改变多数类样本比例以达到修改样本分布的目的,从而使样本分布较为均衡,但是这也存在一些问题.对于随机欠采样,由于采样的样本集合要少于原来的样本集合,因此会造成一些信息缺失,即将多数类样本删除有可能会导致分类器丢失有关多数类的重要信息.
 
-     为了克服随机欠采样方法导致的信息缺失问题，又要保证算法表现出较好的不均衡数据分类性能，出现了欠采样法代表性的算法 *EasyEnsemble* 和 *BalanceCascade* 算法。
+     为了克服随机欠采样方法导致的信息缺失问题,又要保证算法表现出较好的不均衡数据分类性能,出现了欠采样法代表性的算法 *EasyEnsemble* 和 *BalanceCascade* 算法.
 **** 欠采样代表性算法-EasyEnsemble \cite{4717268}
 
-     算法步骤：
-      1. 从多数类中有放回的随机采样 n 次，每次选取与少数类数目相近的样本个数，那么可以得到 n 个样本集合记作。
-      2. 然后，将每一个多数类样本的子集与少数类样本合并并训练出一个模型，可以得到 n 个模型。
-      3. 最终将这些模型组合形成一个集成学习系统，最终的模型结果是这 n 个模型的平均值。
+     算法步骤:
+      1. 从多数类中有放回的随机采样 n 次,每次选取与少数类数目相近的样本个数,那么可以得到 n 个样本集合记作.
+      2. 然后,将每一个多数类样本的子集与少数类样本合并并训练出一个模型,可以得到 n 个模型.
+      3. 最终将这些模型组合形成一个集成学习系统,最终的模型结果是这 n 个模型的平均值.
 **** 欠采样代表性算法-BalanceCascade \cite{4717268}
 
-     BalanceCascade 算法基于 Adaboost，将 Adaboost 作为基分类器，其核心思路是：
-      1. 在每一轮训练时都使用多数类与少数类数量相等的训练集，训练出一个 Adaboost 基分类器。
-      2. 然后使用该分类器对全体多数类进行预测，通过控制分类阈值来控制假正例率（False Positive Rate）,将所有判断正确的类删除。
-      3. 最后，进入下一轮迭代中，继续降低多数类数量。
+     BalanceCascade 算法基于 Adaboost,将 Adaboost 作为基分类器,其核心思路是:
+      1. 在每一轮训练时都使用多数类与少数类数量相等的训练集,训练出一个 Adaboost 基分类器.
+      2. 然后使用该分类器对全体多数类进行预测,通过控制分类阈值来控制假正例率(False Positive Rate),将所有判断正确的类删除.
+      3. 最后,进入下一轮迭代中,继续降低多数类数量.
      #+CAPTION: BalanceCascade Algorithms
      file:figures/BalanceCascade.png
 *** 过采样方法
-    对训练集里的少数类进行“过采样”（oversampling），即增加一些少数类样本使得正、反例数目接近，然后再进行学习。
+    对训练集里的少数类进行"过采样"(oversampling),即增加一些少数类样本使得正、反例数目接近,然后再进行学习.
 **** 随机过采样方法
 
-     随机过采样是在少数类 $S_{min}$ 中随机选择一些样本，然后通过复制所选择的样本生成样本集 *E* ，将它们添加到 $S_{min}$ 中来扩大原始数据集从而得到新的少数类集合 $S_{new-min}$ 。新的数据集 $S_{new-min} = S_{min} + E$ 。
+     随机过采样是在少数类 $S_{min}$ 中随机选择一些样本,然后通过复制所选择的样本生成样本集 *E* ,将它们添加到 $S_{min}$ 中来扩大原始数据集从而得到新的少数类集合 $S_{new-min}$ .新的数据集 $S_{new-min} = S_{min} + E$ .
      - 缺点
 
-       对于随机过采样，由于需要对少数类样本进行复制来扩大数据集，造成模型训练复杂度加大。另一方面也容易造成模型的过拟合问题，因为随机过采样是简单的对初始样本进行复制采样，这就使得学习器学得的规则过于具体化，不利于学习器的泛化性能，造成过拟合问题。
+       对于随机过采样,由于需要对少数类样本进行复制来扩大数据集,造成模型训练复杂度加大.另一方面也容易造成模型的过拟合问题,因为随机过采样是简单的对初始样本进行复制采样,这就使得学习器学得的规则过于具体化,不利于学习器的泛化性能,造成过拟合问题.
 
-       为了解决随机过采样中造成模型过拟合问题，又能保证实现数据集均衡的目的，出现了过采样法代表性的算法 *SMOTE* 和 *Borderline-SMOTE* 算法。
+       为了解决随机过采样中造成模型过拟合问题,又能保证实现数据集均衡的目的,出现了过采样法代表性的算法 *SMOTE* 和 *Borderline-SMOTE* 算法.
 
 **** 过采样代表性算法-SMOTE \cite{Chawla_2002}
 
      SMOTE 全称是 Synthetic Minority Oversampling 即合成少数类过采样技术.
 
-     SOMT 算法的基本思想是对每个少数类样本，从它的最近邻中随机选择一个样本（是少数类中的一个样本），然后在和之间的连线上随机选择一点作为新合成的少数类样本。
+     SOMT 算法的基本思想是对每个少数类样本,从它的最近邻中随机选择一个样本(是少数类中的一个样本),然后在和之间的连线上随机选择一点作为新合成的少数类样本.
 
-     SMOTE 算法合成新少数类样本的算法描述如下：
-      1. 对于少数类中的每一个样本，以欧氏距离为标准计算它到少数类样本集中所有样本的距离，得到其 k 近邻。
-      2. 根据样本不平衡比例设置一个采样比例以确定采样倍率 N，对于每一个少数类样本，从其 k 近邻中随机选择若干个样本，假设选择的是。
-      3. 对于每一个随机选出来的近邻，分别与按照如下公式构建新的样本。 \( x_{new} = x_{i} + rand(0, 1) * (\hat{x_{i}} - x_{i}) \)
+     SMOTE 算法合成新少数类样本的算法描述如下:
+      1. 对于少数类中的每一个样本,以欧氏距离为标准计算它到少数类样本集中所有样本的距离,得到其 k 近邻.
+      2. 根据样本不平衡比例设置一个采样比例以确定采样倍率 N,对于每一个少数类样本,从其 k 近邻中随机选择若干个样本,假设选择的是.
+      3. 对于每一个随机选出来的近邻,分别与按照如下公式构建新的样本. \( x_{new} = x_{i} + rand(0, 1) * (\hat{x_{i}} - x_{i}) \)
 
-     SMOTE 算法摒弃了随机过采样复制样本的做法，可以防止随机过采样中容易过拟合的问题，实践证明此方法可以提高分类器的性能。
+     SMOTE 算法摒弃了随机过采样复制样本的做法,可以防止随机过采样中容易过拟合的问题,实践证明此方法可以提高分类器的性能.
 
      但是 SMOTE 算法也存以下两个缺点:
-      - 由于对每个少数类样本都生成新样本，因此容易发生生成样本重叠的问题。
-      - 在 SMOTE 算法中，出现了过度泛化的问题，主要归结于产生合成样本的方法。特别是，SMOTE 算法对于每个原少数类样本产生相同数量的合成数据样本，而没有考虑其邻近样本的分布特点，这就使得类间发生重复的可能性增大。
-     为了克服以上两点的限制，多种不同的自适应抽样方法相继被提出，其中具有代表性的算法包括 Borderline-SMOTE 算法。
+      - 由于对每个少数类样本都生成新样本,因此容易发生生成样本重叠的问题.
+      - 在 SMOTE 算法中,出现了过度泛化的问题,主要归结于产生合成样本的方法.特别是,SMOTE 算法对于每个原少数类样本产生相同数量的合成数据样本,而没有考虑其邻近样本的分布特点,这就使得类间发生重复的可能性增大.
+     为了克服以上两点的限制,多种不同的自适应抽样方法相继被提出,其中具有代表性的算法包括 Borderline-SMOTE 算法.
 
 **** Borderline-SMOTE 算法  \cite{Han_2005}
 
-     对于 Borderline-SMOTE 算法最感兴趣的就是用于识别少数类种子样本的方法。在 Borderline-SMOTE 算法中，识别少数类种子样本的过程如下：
+     对于 Borderline-SMOTE 算法最感兴趣的就是用于识别少数类种子样本的方法.在 Borderline-SMOTE 算法中,识别少数类种子样本的过程如下:
 
-      1. 首先，对于每个 $x_{i} \subset S_{min}$ ,确定一系列最近邻样本集，成该数据集为 $S_{i-KNN}$ ，且 $S_{i-KNN} \subset S$ 。
-      2. 然后，对每个样本 $x_{i}$ ，判断出最近邻样本集中属于多数类样本的个数，即 $|S_{i-KNN} \cap S_{maj}|$ ：
-      3. 最后，选择满足下面不等式的。
+      1. 首先,对于每个 $x_{i} \subset S_{min}$ ,确定一系列最近邻样本集,成该数据集为 $S_{i-KNN}$ ,且 $S_{i-KNN} \subset S$ .
+      2. 然后,对每个样本 $x_{i}$ ,判断出最近邻样本集中属于多数类样本的个数,即 $|S_{i-KNN} \cap S_{maj}|$ :
+      3. 最后,选择满足下面不等式的.
          \( k/2 < |S_{i-KNN} \cap S_{maj}| < k \)
 
-     上面式子表明，只有最近邻样本集中多数类多于少数类的那些 $x_{i}$ 才会被选中形成“危险集”(DANGER)。因此，DANGER 集中的样本代表少数类样本的边界（最容易被错分的样本）。然后对 DANGER 集中使用 SMOTE 算法在边界附近产生人工合成少数类样本。
+     上面式子表明,只有最近邻样本集中多数类多于少数类的那些 $x_{i}$ 才会被选中形成"危险集"(DANGER).因此,DANGER 集中的样本代表少数类样本的边界(最容易被错分的样本).然后对 DANGER 集中使用 SMOTE 算法在边界附近产生人工合成少数类样本.
 
      #+CAPTION: 基于在边界上样本的数据建立
      #+NAME: fig.smote_data
@@ -94,7 +94,7 @@
      [[file:figures/borderline_smote_flow.png]]
 *** 代价敏感学习(cost-sensitive learning)
 
-    采样算法从数据层面解决不平衡数据的学习问题；在算法层面上解决不平衡数据学习的方法主要是基于代价敏感学习算法（Cost-Sensitive Learning).
+    采样算法从数据层面解决不平衡数据的学习问题;在算法层面上解决不平衡数据学习的方法主要是基于代价敏感学习算法(Cost-Sensitive Learning).
 
     代价敏感学习方法的核心要素是代价矩阵.
 
@@ -107,14 +107,14 @@
 **** 代价敏感学习方法
      代价敏感学习方法主要有以下三种实现方式:
        1. 从学习模型出发
-          *对某一具体学习方法的改造* ，使之能适应不平衡数据下的学习，研究者们针对不同的学习模型如感知机、支持向量机、决策树、神经网络等分别提出了其代价敏感的版本。以代价敏感的决策树为例，可以从三个方面对其进行改造以适应不平衡数据的学习，这三个方面分别是决策阈值的选择方面、分裂标准的选择方面、剪枝方面，这三个方面都可以将代价矩阵引入。
+          *对某一具体学习方法的改造* ,使之能适应不平衡数据下的学习,研究者们针对不同的学习模型如感知机、支持向量机、决策树、神经网络等分别提出了其代价敏感的版本.以代价敏感的决策树为例,可以从三个方面对其进行改造以适应不平衡数据的学习,这三个方面分别是决策阈值的选择方面、分裂标准的选择方面、剪枝方面,这三个方面都可以将代价矩阵引入.
        2. 从贝叶斯风险理论出发
-          *把代价敏感学习看成是分类结果的一种后处理* ，按照传统方法学习到一个模型，以实现损失最小为目标对结果进行调整，优化公式如下所示。此方法的优点在于它可以不依赖所用的具体分类器，但是缺点也很明显，它要求分类器输出值为概率。
+          *把代价敏感学习看成是分类结果的一种后处理* ,按照传统方法学习到一个模型,以实现损失最小为目标对结果进行调整,优化公式如下所示.此方法的优点在于它可以不依赖所用的具体分类器,但是缺点也很明显,它要求分类器输出值为概率.
        3. 从预处理的角度出发
-          *将代价用于权重调整* ，使得分类器满足代价敏感的特性，下面讲解一种基于 Adaboost 的权重更新策略 AdaCost 算法。
+          *将代价用于权重调整* ,使得分类器满足代价敏感的特性,下面讲解一种基于 Adaboost 的权重更新策略 AdaCost 算法.
 
-          AdaCost 算法修改了 Adaboost 算法的权重更新策略，其基本思想是 *对代价高的误分类样本大大地提高其权重，而对于代价高的正确分类样本适当地降低其权重，使其权重降低相对较小。总体思想是代价高样本权重增加得大降低的慢* 。
-          其样本权重按照如下公式进行更新。其中 $\beta_{\_}$ 和 $\beta_{+}$ 分别表示样本被正确和错误分类情况下的 $\beta$ 的取值。
+          AdaCost 算法修改了 Adaboost 算法的权重更新策略,其基本思想是 *对代价高的误分类样本大大地提高其权重,而对于代价高的正确分类样本适当地降低其权重,使其权重降低相对较小.总体思想是代价高样本权重增加得大降低的慢* .
+          其样本权重按照如下公式进行更新.其中 $\beta_{\_}$ 和 $\beta_{+}$ 分别表示样本被正确和错误分类情况下的 $\beta$ 的取值.
           #+CAPTION: Adacost weight update
           [[./figures/adacost.png]]
 
@@ -123,14 +123,14 @@
 ** 不平衡学习的评价方法
    - F1
    - G-Mean
-   - ROC曲线和AUC面积
+   - ROC 曲线和 AUC 面积
 ** 如何选择算法
-    1. 在正负样本都非常少的情况下，应该采用数据合成的方式，例如：SMOTE 算法和 Borderline-SMOTE 算法。
-    2. 在正负样本都足够多且比例不是特别悬殊的情况下，应该考虑采样的方法或者是加权的方法。
+    1. 在正负样本都非常少的情况下,应该采用数据合成的方式,例如:SMOTE 算法和 Borderline-SMOTE 算法.
+    2. 在正负样本都足够多且比例不是特别悬殊的情况下,应该考虑采样的方法或者是加权的方法.
 * Types Of Machine Learning Algorithms
 ** Learning Style
 *** Supervised Learning
-    从给定的训练数据集中学习出一个函数，当新的数据到来时，可以根据这个函数预测结果。监督学习的训练集需要包括输入和输出，也可以说是特征和目标。训练集中的目标是由人标注的。常见的监督式学习算法包括回归分析和统计分类。 [fn:1]  [fn:4]
+    从给定的训练数据集中学习出一个函数,当新的数据到来时,可以根据这个函数预测结果.监督学习的训练集需要包括输入和输出,也可以说是特征和目标.训练集中的目标是由人标注的.常见的监督式学习算法包括回归分析和统计分类. [fn:1]  [fn:4]
     #+CAPTION: Supervised Learning WorkFlow
     [[./figures/SupervisedLearning1.png]]
 
@@ -147,7 +147,7 @@
      6. 评估实际学习出的函数
 **** Common Algorithms
 
-     逻辑回归（Logistic Regression）和反向传递神经网络（Back Propagation Neural Network）
+     逻辑回归(Logistic Regression)和反向传递神经网络(Back Propagation Neural Network)
      - ArtifiCial Neural Network
      - Naive Bayes
      - Support Vector Machines (SVM)
@@ -156,7 +156,7 @@
      - Nearest Neighbor
      - K-Nearest Neighbors
 *** Unsupervised Learning
-    与监督学习相比，训练集没有人为标注的结果。学习模型是为了推断出数据的一些内在结构。
+    与监督学习相比,训练集没有人为标注的结果.学习模型是为了推断出数据的一些内在结构.
 
     These algorithms try to use techniques on the input data to mine for rules, detect patterns, and summarize and group the data points which help in deriving meaningful insights and describe the data better to the users.
 **** Application Scenarios
@@ -181,9 +181,9 @@
 *** Semi-Supervised Learning
    Input data is a mixture of labelled and unlabelled examples. There is a desired prediction problem but the model must learn the structures to organize the data as well as make predictions.
 
-   Application Scenarios：Regression, Classification
+   Application Scenarios:Regression, Classification
 
-   算法包括一些对常用监督式学习算法的延伸，这些算法首先试图对未标识数据进行建模，在此基础上再对标识的数据进行预测。如图论推理算法（Graph Inference）或者拉普拉斯支持向量机（Laplacian SVM.）等。
+   算法包括一些对常用监督式学习算法的延伸,这些算法首先试图对未标识数据进行建模,在此基础上再对标识的数据进行预测.如图论推理算法(Graph Inference)或者拉普拉斯支持向量机(Laplacian SVM.)等.
 *** Reinforcement Learning
     Reinforcement Learning allows machines and software agents to automatically determine the ideal behavior within a specific context, in order to maximize its performance. Simple reward feedback is required for the agent to learn its behavior; this is known as the reinforcement signal. [fn:2]
      #+CAPTION: Reinforcement Learning state graph
@@ -340,7 +340,7 @@
 
       This measure, although taking into consideration the distribution of each dimension, assumes the dimensions are independent of each other. But what if the x-dimension has some correlation with the y-dimension? To consider correlations between different dimensions, we use this *Mahalanobis distance*.
 
-      简单说来，闵氏距离的缺点主要有两个：(1)将各个分量的量纲(scale)，也就是“单位”当作相同的看待了。(2)没有考虑各个分量的分布（期望，方差等)可能是不同的。
+      简单说来,闵氏距离的缺点主要有两个:(1)将各个分量的量纲(scale),也就是"单位"当作相同的看待了.(2)没有考虑各个分量的分布(期望,方差等)可能是不同的.
 **** Euclidean Distance
      When Minkowski distances p = 2, this is equivalent to Euclidean distance[fn:14]
 \begin{equation}
@@ -364,9 +364,9 @@ D_{M}({\vec {x}})={\sqrt {({\vec {x}}-{\vec {\mu }})^{T}S^{-1}({\vec {x}}-{\vec 
 \end{equation}
 
 
-    马氏距离有很多优点，马氏距离不受量纲的影响，两点之间的马氏距离与原始数据的测量单位无关；由标准化数据和中心化数据(即原始数据与均值之差）计算出的二点之间的马氏距离相同。马氏距离还可以排除变量之间的相关性的干扰。
+    马氏距离有很多优点,马氏距离不受量纲的影响,两点之间的马氏距离与原始数据的测量单位无关;由标准化数据和中心化数据(即原始数据与均值之差)计算出的二点之间的马氏距离相同.马氏距离还可以排除变量之间的相关性的干扰.
 
-   它的缺点是夸大了变化微小的变量的作用。
+   它的缺点是夸大了变化微小的变量的作用.
 **** Cosine Distance
      If we care about the direction of the data rather than the magnitude, then using the cosine distance is a common approach.
 
@@ -382,7 +382,7 @@ D_{M}({\vec {x}})={\sqrt {({\vec {x}}-{\vec {\mu }})^{T}S^{-1}({\vec {x}}-{\vec 
 {\text{similarity}}=\cos(\theta )={\mathbf {A} \cdot \mathbf {B}  \over \|\mathbf {A} \|\|\mathbf {B} \|}={\frac {\sum \limits _{i=1}^{n}{A_{i}B_{i}}}{{\sqrt {\sum \limits _{i=1}^{n}{A_{i}^{2}}}}{\sqrt {\sum \limits _{i=1}^{n}{B_{i}^{2}}}}}}
 \end{equation}
 
-    夹角余弦取值范围为[-1,1]。夹角余弦越大表示两个向量的夹角越小，夹角余弦越小表示两向量的夹角越大。当两个向量的方向重合时夹角余弦取最大值 1，当两个向量的方向完全相反夹角余弦取最小值-1。
+    夹角余弦取值范围为[-1,1].夹角余弦越大表示两个向量的夹角越小,夹角余弦越小表示两向量的夹角越大.当两个向量的方向重合时夹角余弦取最大值 1,当两个向量的方向完全相反夹角余弦取最小值-1.
 *** Distance Between Categorical Data Points
 **** Hamming Distance
      In information theory, the Hamming distance between two strings of equal length is the number of positions at which the corresponding symbols are different.[fn:21]  In other words, it measures the minimum number of substitutions required to change one string into the other, or the minimum number of errors that could have transformed one string into the other.
@@ -397,7 +397,7 @@ D_{M}({\vec {x}})={\sqrt {({\vec {x}}-{\vec {\mu }})^{T}S^{-1}({\vec {x}}-{\vec 
            return sum(el1 != el2 for el1, el2 in zip(s1, s2))
      #+END_SRC
 
-   应用：信息编码（为了增强容错性，应使得编码间的最小汉明距离尽可能大）。
+   应用:信息编码(为了增强容错性,应使得编码间的最小汉明距离尽可能大).
 **** Jaccard Similarity
      *However, in some cases, equality of certain values don't mean anything*. For example, let's say the data point represents a user with attributes representing each movie. The data point contains a high dimensional binary value indicating that the user has or has not seen the movie (1 represent yes and 0 represent no). Given that most users only see a small portion of all movies, if both users haven't seen a particular movie (a value of 0 for both), it doesn't indicate a similarity between the users. On the other hand, if both users saw the same movie (a value of 1 for each), it is implied that the users have many similarities. In this case, equality of 1 should carry a much higher weight than equality of 0. This leads to the *Jaccard similarity*
 
@@ -545,6 +545,8 @@ d_{{i0}}&=\sum _{{k=1}}^{{i}}w_{{\mathrm  {del}}}(b_{{k}}),&&\quad {\text{for}}\
   - F1 Score
   - Mean Absolute Error
   - Mean Squared Error
+  - ROC AUC
+
 ** Confusion Matrix
    In the field of machine learning and specifically the problem of statistical classification, a confusion matrix, also known as an error matrix[fn:6].
 
@@ -615,15 +617,15 @@ LogarithmicLoss = \frac{-1}{N}\sum_{i=1}^{N}\sum_{j=1}^{M}y_{ij}*log(p_{ij})
 
     When to use Precision and When to use Recall?
     - *Precision* is about being precise. So even if we managed to capture only one cancer case, and we captured it correctly, then we are 100% precise.
-    - *Recall* is not so much about capturing cases correctly but more about capturing all cases that have “cancer” with the answer as “cancer”. So if we simply always say every case as “cancer”, we have 100% recall.
+    - *Recall* is not so much about capturing cases correctly but more about capturing all cases that have "cancer" with the answer as "cancer". So if we simply always say every case as "cancer", we have 100% recall.
 
 *** ROC & AUC
     ROC(Receiver Operating Characteristic)
 
     AUC(Area Under Curve)
 
-    在不同的应用任务中，我们可根据任务需求来采用不同的阈值。例如，若我们更重视“查准率”(Precision)，则可以把阈值设置的大一些，让分类器的预测结果更有把握；若我们更重视“查全率”(Recall)，则可以把阈值设置的小一些，让分类器预测出更多的正例。
-     *ROC曲线则是从阈值选取角度出发来研究学习器泛化性能的有力工具*.
+    在不同的应用任务中,我们可根据任务需求来采用不同的阈值.例如,若我们更重视"查准率"(Precision),则可以把阈值设置的大一些,让分类器的预测结果更有把握;若我们更重视"查全率"(Recall),则可以把阈值设置的小一些,让分类器预测出更多的正例.
+     *ROC 曲线则是从阈值选取角度出发来研究学习器泛化性能的有力工具*.
 **** ROC
      The ROC curve is created by plotting the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings.[fn:9]
 
@@ -641,21 +643,21 @@ LogarithmicLoss = \frac{-1}{N}\sum_{i=1}^{N}\sum_{j=1}^{M}y_{ij}*log(p_{ij})
 
 
      主要作用:
-      1. ROC曲线能很容易的查出任意阈值对学习器的泛化性能影响。
-      2.有助于选择最佳的阈值。ROC曲线越靠近左上角，模型的准确性就越高。最靠近左上角的ROC曲线上的点是分类错误最少的最好阈值，其假正例和假反例总数最少。
-      3.可以对不同的学习器比较性能。将各个学习器的ROC曲线绘制到同一坐标中，直观地鉴别优劣，靠近左上角的ROC曲所代表的学习器准确性最高。
+      1. ROC 曲线能很容易的查出任意阈值对学习器的泛化性能影响.
+      2.有助于选择最佳的阈值.ROC 曲线越靠近左上角,模型的准确性就越高.最靠近左上角的 ROC 曲线上的点是分类错误最少的最好阈值,其假正例和假反例总数最少.
+      3.可以对不同的学习器比较性能.将各个学习器的 ROC 曲线绘制到同一坐标中,直观地鉴别优劣,靠近左上角的 ROC 曲所代表的学习器准确性最高.
      优点:
-     - 该方法简单、直观、通过图示可观察分析学习器的准确性，并可用肉眼作出判断。ROC曲线将真正例率和假正例率以图示方法结合在一起，可准确反映某种学习器真正例率和假正例率的关系，是检测准确性的综合代表。
-     - ROC曲线不固定阈值，允许中间状态的存在，利于使用者结合专业知识，权衡漏诊与误诊的影响，选择一个更加的阈值作为诊断参考值。
+     - 该方法简单、直观、通过图示可观察分析学习器的准确性,并可用肉眼作出判断.ROC 曲线将真正例率和假正例率以图示方法结合在一起,可准确反映某种学习器真正例率和假正例率的关系,是检测准确性的综合代表.
+     - ROC 曲线不固定阈值,允许中间状态的存在,利于使用者结合专业知识,权衡漏诊与误诊的影响,选择一个更加的阈值作为诊断参考值.
 **** AUC
-     在进行学习器的比较时，若一个学习器的ROC曲线被另一个学习器的曲线完全“包住”，则可断言后者的性能优于前者；若两个学习器的ROC曲线发生交叉，则难以一般性的断言两者孰优孰劣。此时如果一定要进行比较，则比较合理的判断依据是比较 *ROC曲线下的面积*.
+     在进行学习器的比较时,若一个学习器的 ROC 曲线被另一个学习器的曲线完全"包住",则可断言后者的性能优于前者;若两个学习器的 ROC 曲线发生交叉,则难以一般性的断言两者孰优孰劣.此时如果一定要进行比较,则比较合理的判断依据是比较 *ROC 曲线下的面积*.
      TODO fix Mann-Whitney U test[fn:10]
 
-     AUC是衡量 *二分类模型* 优劣的一种评价指标， *表示预测的正例排在负例前面的概率* 。AUC和Mann-Whitney U test[fn:10](曼-慧特尼U检验)有密切的联系。从Mann-Whitney U statistic的角度来解释，AUC就是从所有正样本中随机选择一个样本，从所有负样本中随机选择一个样本，然后根据你的学习器对两个随机样本进行预测，把正样本预测为正例的概率，把负样本预测为正例的概率，>的概率就等于AUC。所以AUC反映的是分类器对样本的排序能力。
+     AUC 是衡量 *二分类模型* 优劣的一种评价指标, *表示预测的正例排在负例前面的概率* .AUC 和 Mann-Whitney U test[fn:10](曼-慧特尼 U 检验)有密切的联系.从 Mann-Whitney U statistic 的角度来解释,AUC 就是从所有正样本中随机选择一个样本,从所有负样本中随机选择一个样本,然后根据你的学习器对两个随机样本进行预测,把正样本预测为正例的概率,把负样本预测为正例的概率,>的概率就等于 AUC.所以 AUC 反映的是分类器对样本的排序能力.
 
-     AUC的计算方法同时考虑了学习器对于正例和负例的分类能力，在样本不平衡的情况下，依然能够对分类器做出合理的评价。 *AUC对样本类别是否均衡并不敏感*, 这也是不均衡样本通常用AUC评价学习器性能的一个原因。
+     AUC 的计算方法同时考虑了学习器对于正例和负例的分类能力,在样本不平衡的情况下,依然能够对分类器做出合理的评价. *AUC 对样本类别是否均衡并不敏感*, 这也是不均衡样本通常用 AUC 评价学习器性能的一个原因.
 
-     在多分类问题下能不能使用ROC曲线来衡量模型性能? 如果确实需要在多分类问题中用ROC曲线的话，可以转化为多个“一对多”的问题。即把其中一个当作正例，其余当作负例来看待，画出多个ROC曲线。
+     在多分类问题下能不能使用 ROC 曲线来衡量模型性能? 如果确实需要在多分类问题中用 ROC 曲线的话,可以转化为多个"一对多"的问题.即把其中一个当作正例,其余当作负例来看待,画出多个 ROC 曲线.
 *** F1 Score
     In statistical analysis of binary classification, the F1 score (also F-score or F-measure) is a measure of a test's accuracy.[fn:12]
 
@@ -716,6 +718,25 @@ F_{1}=\left({\frac {\mathrm {recall} ^{-1}+\mathrm {precision} ^{-1}}{2}}\right)
 \label{eq:9}
 \begin{aligned}\operatorname {MSE} ({\hat {\theta }})&=\operatorname {E} _{\hat {\theta }}\left[({\hat {\theta }}-\theta )^{2}\right]\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]+\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}\right]\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)^{2}+2\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)+\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}\right]\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)^{2}\right]+\operatorname {E} _{\hat {\theta }}\left[2\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)\right]+\operatorname {E} _{\hat {\theta }}\left[\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}\right]\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)^{2}\right]+2\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)\operatorname {E} _{\hat {\theta }}\left[{\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right]+\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}&&\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta ={\text{const.}}\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)^{2}\right]+2\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)+\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}&&\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]={\text{const.}}\\&=\operatorname {E} _{\hat {\theta }}\left[\left({\hat {\theta }}-\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]\right)^{2}\right]+\left(\operatorname {E} _{\hat {\theta }}[{\hat {\theta }}]-\theta \right)^{2}\\&=\operatorname {Var} _{\hat {\theta }}({\hat {\theta }})+\operatorname {Bias} _{\hat {\theta }}({\hat {\theta }},\theta )^{2}\end{aligned}
 \end{equation}
+** ROC & AUC
+*** ROC
+    ROC 曲线则是从阈值选取角度出发来研究学习器泛化性能的有力工具.
+
+    绘制过程很简单:给定个正例和个反例,根据学习器预测结果对样例进行排序,然后把分类阈值设置为最大,即把所有样例均预测为反例,此时真正例率和假正例率均为 0,在坐标(0,0)处标记一个点. \\
+    然后,将分类阈值依次设为每个样例的预测值,即依次将每个样例划分为正例.设前一个标记点坐标为(x, y),当前若为真正例,则对应标记点的坐标为 $(x, y + \frac{1}{m^+} )$ ;当前若为假正例,则对应标记点的坐标为 $(x+\frac{1}{m^-}, y)$,然后用线段连接相邻点即得.
+
+    作用:
+      1. ROC 曲线能很容易的查出任意阈值对学习器的泛化性能影响.
+      2. 有助于选择最佳的阈值.ROC 曲线越靠近左上角,模型的准确性就越高.最靠近左上角的 ROC 曲线上的点是分类错误最少的最好阈值,其假正例和假反例总数最少.
+      3. 可以对不同的学习器比较性能.将各个学习器的 ROC 曲线绘制到同一坐标中,直观地鉴别优劣,靠近左上角的 ROC 曲所代表的学习器准确性最高.
+*** AUC
+    AUC 就是 ROC 曲线下的面积,衡量学习器优劣的一种性能指标.
+    AUC 是衡量二分类模型优劣的一种评价指标,表示预测的正例排在负例前面的概率.
+
+    AUC 就是从所有正样本中随机选择一个样本,从所有负样本中随机选择一个样本,然后根据你的学习器对两个随机样本进行预测,把正样本预测为正例的概率$P_{1}$,把负样本预测为正例的概率$P_{2}$,$P_{1}>P_{2}$的概率就等于 AUC.
+
+    另外值得注意的是,AUC 的计算方法同时考虑了学习器对于正例和负例的分类能力,在样本不平衡的情况下,依然能够对分类器做出合理的评价.AUC 对样本类别是否均衡并不敏感,这也是不均衡样本通常用 AUC 评价学习器性能的一个原因.
+
 * Ten Examples of Machine Learning Problems
    1. Spam Detection  \\
     Given email in an inbox, identify those email messages that are spam and those that are not.Having a model of this problem would allow a program to leave non-spam emails in the inbox and move spam emails to a spam folder.
